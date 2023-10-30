@@ -179,7 +179,7 @@ const HabitList = ({
                             onClick={() => handleCheckClick(habit)}
                             disabled={habit.goalDays <= 0}
                           >
-                            CHECK!
+                            CHECK
                           </button>
                           
                         </div>
