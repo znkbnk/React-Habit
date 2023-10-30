@@ -1,14 +1,34 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import Calendar from "react-calendar";
 
-const HabitForm = ({ addHabit, setSelectedCategory }) => {
+const HabitForm = ({
+  addHabit,
+  setSelectedCategory,
+  categories,
+  setSelectedDate,
+  selectedDate,
+  setSelectedFrequency,
+  selectedFrequency,
+}) => {
   const [habit, setHabit] = useState({
     name: "",
     reminderTime: "",
     goalDays: "",
     initialGoalDays: "",
-    category: "", // Initialize with a default category or choose one
+    category: "",
+    notes: "",
   });
   const [goalDaysError, setGoalDaysError] = useState("");
+  const [uniqueCategories, setUniqueCategories] = useState([]);
+
+  useEffect(() => {
+    // Filter out duplicate categories and include default categories
+    const defaultCategories = [];
+    const filteredCategories = categories.filter(
+      (category) => !defaultCategories.includes(category)
+    );
+    setUniqueCategories([...defaultCategories, ...filteredCategories]);
+  }, [categories]);
 
   const handleHabitChange = (event) => {
     setHabit((prevHabit) => ({ ...prevHabit, name: event.target.value }));
@@ -62,9 +82,17 @@ const HabitForm = ({ addHabit, setSelectedCategory }) => {
         reminderTime: "",
         goalDays: "",
         initialGoalDays: "",
-        category: "", // Reset the category to a default or choose one
+        category: "",
+        notes: "",
       });
     }
+  };
+
+  const handleNotesChange = (event) => {
+    setHabit((prevHabit) => ({
+      ...prevHabit,
+      notes: event.target.value,
+    }));
   };
 
   return (
@@ -74,6 +102,7 @@ const HabitForm = ({ addHabit, setSelectedCategory }) => {
         value={habit.name}
         onChange={handleHabitChange}
         placeholder='Enter a new habit'
+        required
       />
       <input
         type='text'
@@ -90,14 +119,45 @@ const HabitForm = ({ addHabit, setSelectedCategory }) => {
       />
       {goalDaysError && <p style={{ color: "red" }}>{goalDaysError}</p>}
       <div className='input-container'>
-        <select value={habit.category} onChange={handleCategoryChange} required >
+        <select value={habit.category} onChange={handleCategoryChange} required>
           <option value='' disabled>
             Please choose category
           </option>
-          <option value='Read'>Read</option>
-          <option value='Drink Water'>Drink Water</option>
-          <option value='Do Exercise'>Do Exercise</option>
+          {uniqueCategories.map((category) => (
+            <option key={category} value={category}>
+              {category}
+            </option>
+          ))}
         </select>
+
+        <select
+          onChange={(e) => setSelectedFrequency(e.target.value)}
+          value={selectedFrequency}
+        >
+          <option value='none'>Select Frequency</option>
+          <option value='daily'>Daily</option>
+          <option value='weekly'>Weekly</option>
+          <option value='monthly'>Monthly</option>
+        </select>
+
+        <div className='textarea-container'>
+          <textarea
+            value={habit.notes}
+            onChange={handleNotesChange}
+            placeholder='Enter notes (optional)'
+          />
+        </div>
+        {selectedFrequency !== "none" && (
+          <div className='custom-calendar'>
+            <label htmlFor='selectedDate'>Select Date:</label>
+            <Calendar
+              onChange={setSelectedDate}
+              value={selectedDate}
+              minDate={new Date()}
+              required
+            />
+          </div>
+        )}
       </div>
       <button type='submit'>Add Habit</button>
     </form>

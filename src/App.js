@@ -2,143 +2,195 @@ import React, { useState, useEffect } from "react";
 import HabitForm from "./HabitForm";
 import HabitList from "./HabitList";
 import DeletedHabits from "./DeletedHabits";
-import FavoriteHabits from "./FavoriteHabits";
 import emailjs from "emailjs-com";
 import CompletedHabits from "./CompletedHabits";
 import CategoryDropdown from "./CategoryDropdown";
 import RegistrationForm from "./RegistrationForm";
 import Chart from "chart.js/auto";
+import SkewedNavbar from "./SkewedNavbar";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
+
+const setThemePreference = (theme) => {
+  localStorage.setItem("theme", theme);
+};
+
+const getThemePreference = () => {
+  return localStorage.getItem("theme") || "light";
+};
 
 function App() {
-  const [habits, setHabits] = useState([]);
+
+  const initialHabits = JSON.parse(localStorage.getItem("habits")) || [];
+  const initialCategories = JSON.parse(localStorage.getItem("categories")) || [];
+
+  const [habits, setHabits] = useState(initialHabits);
+  const [categories, setCategories] = useState(initialCategories);
+
   const [deletedHabits, setDeletedHabits] = useState([]);
   const [showDeletedHabits, setShowDeletedHabits] = useState(false);
-  const [showFavoriteHabits, setShowFavoriteHabits] = useState(false);
-  const [favoriteHabits, setFavoriteHabits] = useState([]);
   const [completedHabits, setCompletedHabits] = useState([]);
   const [showCompletedHabits, setShowCompletedHabits] = useState(false);
-  const [categories, setCategories] = useState(["All"]);
   const [showCategoriesDropdown, setShowCategoriesDropdown] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("All");
-  const [theme, setTheme] = useState("light");
+  const [theme, setTheme] = useState(getThemePreference());
   const [isRegistrationVisible, setIsRegistrationVisible] = useState(false);
   const [completedHabitsData, setCompletedHabitsData] = useState({});
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [selectedFrequency, setSelectedFrequency] = useState("none");
+
+
 
   useEffect(() => {
-    // Check the theme preference from localStorage if available
-    const storedTheme = localStorage.getItem("theme");
-    if (storedTheme) {
-      setTheme(storedTheme);
+    const storedCategories = localStorage.getItem("categories");
+    if (storedCategories) {
+      setCategories(JSON.parse(storedCategories));
     }
   }, []);
 
-
-
-  useEffect(() => {
-    // Update the theme preference in localStorage when it changes
-    localStorage.setItem("theme", theme);
-  }, [theme]);
-
-  useEffect(() => {
-    const storedHabits = JSON.parse(localStorage.getItem("habits")) || [];
-    setHabits(storedHabits);
-    updateCategories(storedHabits); // Initialize categories with stored habits
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem("habits", JSON.stringify(habits));
-  }, [habits]);
-
-  useEffect(() => {
-    // Update the completedHabitsData whenever completedHabits change
-    const data = {};
-    completedHabits.forEach((habit) => {
-      if (habit.category) {
-        if (!data[habit.category]) {
-          data[habit.category] = 1;
-        } else {
-          data[habit.category] += 1;
-        }
-      }
-    });
-    setCompletedHabitsData(data);
-  }, [completedHabits]);
-
-useEffect(() => {
-  // Define the showChart function here
-  const showChart = (completedHabitsData) => {
-    const canvas = document.getElementById("habitsChart");
-    const ctx = canvas.getContext("2d");
-
-    // Destroy any existing chart
-    if (window.myChart) {
-      window.myChart.destroy();
-    }
-
-    // Create a new chart
-    window.myChart = new Chart(ctx, {
-      type: "bar",
-      data: {
-        labels: Object.keys(completedHabitsData),
-        datasets: [
-          {
-            label: "Completed Habits by Category",
-            data: Object.values(completedHabitsData),
-            backgroundColor: [
-              "rgba(255, 99, 132, 0.2)",
-              "rgba(54, 162, 235, 0.2)",
-              "rgba(255, 206, 86, 0.2)",
-              "rgba(75, 192, 192, 0.2)",
-              "rgba(153, 102, 255, 0.2)",
-              "rgba(255, 159, 64, 0.2)",
-            ],
-            borderColor: [
-              "rgba(255, 99, 132, 1)",
-              "rgba(54, 162, 235, 1)",
-              "rgba(255, 206, 86, 1)",
-              "rgba(75, 192, 192, 1)",
-              "rgba(153, 102, 255, 1)",
-              "rgba(255, 159, 64, 1)",
-            ],
-            borderWidth: 1,
-          },
-        ],
-      },
-      options: {
-        scales: {
-          y: {
-            beginAtZero: true,
-            stepSize: 1,
-          },
-        },
-      },
-    });
+  const saveCompletedHabitsToStorage = (completedHabits) => {
+    localStorage.setItem("completedHabits", JSON.stringify(completedHabits));
   };
 
-  // Call showChart when completedHabitsData changes
-  if (completedHabitsData) {
-    showChart(completedHabitsData);
-  }
-}, [completedHabitsData]);
-  const addHabit = (habit) => {
+  useEffect(() => {
+    const storedCompletedHabits = localStorage.getItem("completedHabits");
+    if (storedCompletedHabits) {
+      setCompletedHabits(JSON.parse(storedCompletedHabits));
+    }
+  }, []);
+
+  useEffect(() => {
+    // When habits or categories change, save them to localStorage.
+    localStorage.setItem("habits", JSON.stringify(habits));
+    localStorage.setItem("categories", JSON.stringify(categories));
+  }, [habits, categories]);
+
+
+  const getDeletedHabitsFromStorage = () => {
+    const deletedHabitsString = localStorage.getItem("deletedHabits");
+    return deletedHabitsString ? JSON.parse(deletedHabitsString) : [];
+  };
+
+  // Load deleted habits from local storage when the component mounts
+  useEffect(() => {
+    const storedDeletedHabits = getDeletedHabitsFromStorage();
+    setDeletedHabits(storedDeletedHabits);
+  }, []);
+
+  // Function to save deleted habits to local storage
+  const saveDeletedHabitsToStorage = (deletedHabits) => {
+    localStorage.setItem("deletedHabits", JSON.stringify(deletedHabits));
+  };
+
+  useEffect(() => {
+    const data = {};
+    completedHabits
+      .filter(
+        (habit) =>
+          selectedCategory === "All" || habit.category === selectedCategory
+      )
+      .forEach((habit) => {
+        if (habit.category) {
+          if (!data[habit.category]) {
+            data[habit.category] = 1;
+          } else {
+            data[habit.category] += 1;
+          }
+        }
+      });
+    setCompletedHabitsData(data);
+  }, [completedHabits, selectedCategory, theme]);
+
+  useEffect(() => {
+    const showChart = (completedHabitsData) => {
+      const canvas = document.getElementById("habitsChart");
+      const ctx = canvas.getContext("2d");
+
+      if (window.myChart) {
+        window.myChart.destroy();
+      }
+      const tickColor = theme === "light" ? "black" : "white";
+      window.myChart = new Chart(ctx, {
+        type: "bar",
+        data: {
+          labels: Object.keys(completedHabitsData),
+          datasets: [
+            {
+              label: "Completed Habits by Category",
+              data: Object.values(completedHabitsData),
+              backgroundColor: [
+                "rgba(255, 99, 132, 0.2)",
+                "rgba(54, 162, 235, 0.2)",
+                "rgba(255, 206, 86, 0.2)",
+                "rgba(75, 192, 192, 0.2)",
+                "rgba(153, 102, 255, 0.2)",
+                "rgba(255, 159, 64, 0.2)",
+              ],
+
+              borderColor: [
+                "rgba(255, 99, 132, 1)",
+                "rgba(54, 162, 235, 1)",
+                "rgba(255, 206, 86, 1)",
+                "rgba(75, 192, 192, 1)",
+                "rgba(153, 102, 255, 1)",
+                "rgba(255, 159, 64, 1)",
+              ],
+              borderWidth: 1,
+            },
+          ],
+        },
+        options: {
+          plugins: {
+            legend: {
+              labels: {
+                color: tickColor,
+              },
+            },
+          },
+          scales: {
+            x: {
+              beginAtZero: true,
+              ticks: {
+                color: tickColor,
+              },
+            },
+            y: {
+              beginAtZero: true,
+              stepSize: 1,
+              ticks: {
+                color: tickColor,
+              },
+            },
+          },
+        },
+      });
+    };
+
+    if (completedHabitsData) {
+      showChart(completedHabitsData);
+    }
+  }, [completedHabitsData, theme]);
+
+    const addHabit = (habit) => {
     const timestamp = new Date().getTime();
     habit.key = timestamp;
     habit.initialGoalDays = habit.goalDays;
+    habit.date = new Date();
 
-    // Use the functional form of setHabits
+    habit.goalDays = habit.initialGoalDays;
+
     setHabits((prevHabits) => [...prevHabits, habit]);
 
-    // Use the functional form of setCategories
     setCategories((prevCategories) => {
       const uniqueCategories = Array.from(
         new Set([...prevCategories, habit.category])
       );
-      return ["All", ...uniqueCategories];
+      return [...uniqueCategories];
     });
 
     setSelectedCategory(habit.category);
 
-    // Schedule a reminder email when a new habit is added
     const reminderTime = habit.reminderTime;
     if (reminderTime) {
       const [hours, minutes] = reminderTime.split(":");
@@ -154,33 +206,27 @@ useEffect(() => {
       if (reminderDate > currentDate) {
         const timeUntilReminder = reminderDate - currentDate;
         setTimeout(() => {
-          sendReminderEmail(habit.name); // Define this function
+          sendReminderEmail(habit.name);
         }, timeUntilReminder);
       }
     }
-  };
-
-  const updateCategories = (habits) => {
-    const uniqueCategories = Array.from(
-      new Set(habits.map((habit) => habit.category))
-    );
-    setCategories(["All", ...uniqueCategories]);
+    setSelectedDate(new Date());
+    setSelectedFrequency("none");
   };
 
   const sendReminderEmail = (habitName) => {
-    // Use emailjs to send a reminder email
     const templateParams = {
-      to_email: "sample@email.com", // Change this to the user's email
+      to_email: "zenikibeniki@gmail.com",
       subject: "Reminder: Complete Your Habit",
       message: `Don't forget to complete your habit: ${habitName}`,
     };
 
     emailjs
       .send(
-        "YOUR_EMAILJS_SERVICE_ID",
-        "YOUR_EMAILJS_TEMPLATE_ID",
+        "service_1n4gsgx",
+        "template_mgjx1fd",
         templateParams,
-        "YOUR_EMAILJS_USER_ID"
+        "u4-0CXt6mlWQViI6d"
       )
       .then((response) => {
         console.log("Email sent:", response);
@@ -201,31 +247,15 @@ useEffect(() => {
     const updatedHabits = habits.filter((_, i) => i !== index);
     setHabits(updatedHabits);
     setDeletedHabits([...deletedHabits, deletedHabit]);
+    saveDeletedHabitsToStorage([...deletedHabits, deletedHabit]);
 
-    // Remove the deleted habit from favoriteHabits if it exists
-    if (favoriteHabits.includes(deletedHabit)) {
-      const updatedFavoriteHabits = favoriteHabits.filter(
-        (habit) => habit !== deletedHabit
-      );
-      setFavoriteHabits(updatedFavoriteHabits);
-    }
+    
   };
 
   const toggleDeletedHabits = () => {
     setShowDeletedHabits(!showDeletedHabits);
   };
 
-  const toggleFavorite = (index) => {
-    const habitToFavorite = habits[index];
-    if (!favoriteHabits.includes(habitToFavorite)) {
-      setFavoriteHabits([...favoriteHabits, habitToFavorite]);
-    } else {
-      const updatedFavoriteHabits = favoriteHabits.filter(
-        (habit) => habit !== habitToFavorite
-      );
-      setFavoriteHabits(updatedFavoriteHabits);
-    }
-  };
 
   const toggleCategoriesDropdown = () => {
     setShowCategoriesDropdown(!showCategoriesDropdown);
@@ -236,106 +266,177 @@ useEffect(() => {
     toggleCategoriesDropdown(false);
   };
 
-  const toggleTheme = () => {
-    // Toggle between dark and light themes
-    setTheme(theme === "light" ? "dark" : "light");
+  const handleDeleteCategory = (categoryToDelete) => {
+    const updatedCategories = categories.filter(
+      (category) => category !== categoryToDelete
+    );
+    setCategories(updatedCategories);
+    localStorage.setItem("categories", JSON.stringify(updatedCategories));
   };
 
-  const getThemeIcon = () => {
-    if (theme === "light") {
-      return <i className='toggler-icon light'></i>;
-    } else {
-      return <i className='toggler-icon dark'></i>;
-    }
+  const toggleTheme = () => {
+    const newTheme = theme === "light" ? "dark" : "light";
+    setTheme(newTheme);
+    setThemePreference(newTheme); // Save the theme preference
   };
 
   const completeHabit = (index) => {
     const completedHabit = habits[index];
     if (completedHabit.goalDays > 0) {
-      // Decrease the goal days by 1
       const updatedGoalDays = completedHabit.goalDays - 1;
       const updatedHabit = { ...completedHabit, goalDays: updatedGoalDays };
       updateHabit(index, updatedHabit);
 
       if (updatedGoalDays === 0) {
-        // Move the habit to completedHabits when the goal is achieved
-        setCompletedHabits((prevCompletedHabits) => [
-          ...prevCompletedHabits,
-          updatedHabit,
-        ]);
+        // Update completedHabits directly
+        setCompletedHabits([...completedHabits, updatedHabit]);
+        // Save completed habits to localStorage
+        saveCompletedHabitsToStorage([...completedHabits, updatedHabit]);
       }
     }
   };
 
   const toggleRegistration = () => {
-    setIsRegistrationVisible(!isRegistrationVisible); // Toggle the registration form visibility
+    setIsRegistrationVisible(!isRegistrationVisible);
+  };
+
+  const createCategory = (newCategory) => {
+    if (!categories.includes(newCategory)) {
+      setCategories((prevCategories) => [...prevCategories, newCategory]);
+    }
   };
 
   return (
     <div className={`app-container ${theme}`}>
-      <div className='nav-menu'>
-        <button onClick={() => setShowDeletedHabits(!showDeletedHabits)}>
-          Deleted
-        </button>
-        <button onClick={() => setShowFavoriteHabits(!showFavoriteHabits)}>
-          Favorite
-        </button>
-        <button onClick={() => setShowCompletedHabits(!showCompletedHabits)}>
-          Completed
-        </button>
-        <div className='dropdown'>
-          <button onClick={toggleCategoriesDropdown}>
-            Categories {String.fromCharCode(8595)}
-          </button>
-
-          <CategoryDropdown
-            showCategoriesDropdown={showCategoriesDropdown}
-            onCategorySelect={handleCategorySelect} // Pass the handler
-          />
-        </div>
-
-        <button onClick={toggleRegistration}>Register</button>
-        <button className='theme-toggle' onClick={toggleTheme}>
-          {getThemeIcon()}
-        </button>
-        <div className='chart-container'>
-          <canvas id='habitsChart'></canvas>
-        </div>
+      <div
+        className='animation-container'
+        dangerouslySetInnerHTML={{
+          __html: `
+      
+        <svg
+          version='1.1'
+          xmlns='http://www.w3.org/2000/svg'
+          xmlns:xlink='http://www.w3.org/1999/xlink'
+          x='0px'
+          y='0px'
+          width='100%'
+          height='100%'
+          viewBox='0 0 1600 900'
+        >
+          <defs>
+            <linearGradient id='bg' x2='0%' y2='100%'>
+              <stop
+                offset='0%'
+                style='stop-color: rgba(119, 119, 119, 1)'
+              ></stop>
+              <stop
+                offset='100%'
+                style='stop-color: rgba(153, 153, 153, 1)'
+              ></stop>
+            </linearGradient>
+            <path
+              id='wave'
+              fill='url(#bg)'
+              d='M-363.852,502.589c0,0,236.988-41.997,505.475,0
+      s371.981,38.998,575.971,0s293.985-39.278,505.474,5.859s493.475,48.368,716.963-4.995v560.106H-363.852V502.589z'
+            />
+          </defs>
+          <g>
+            <use xlink:href='#wave' opacity='.3'>
+              <animateTransform
+                attributeName='transform'
+                attributeType='XML'
+                type='translate'
+                dur='8s'
+                calcMode='spline'
+                values='270 230; -334 180; 270 230'
+                keyTimes='0; .5; 1'
+                keySplines='0.42, 0, 0.58, 1.0;0.42, 0, 0.58, 1.0'
+                repeatCount='indefinite'
+              />
+            </use>
+            <use xlink:href='#wave' opacity='.6'>
+              <animateTransform
+                attributeName='transform'
+                attributeType='XML'
+                type='translate'
+                dur='6s'
+                calcMode='spline'
+                values='-270 230;243 220;-270 230'
+                keyTimes='0; .6; 1'
+                keySplines='0.42, 0, 0.58, 1.0;0.42, 0, 0.58, 1.0'
+                repeatCount='indefinite'
+              />
+            </use>
+            <use xlink:href='#wave' opacty='.9'>
+              <animateTransform
+                attributeName='transform'
+                attributeType='XML'
+                type='translate'
+                dur='4s'
+                calcMode='spline'
+                values='0 230;-140 200;0 230'
+                keyTimes='0; .4; 1'
+                keySplines='0.42, 0, 0.58, 1.0;0.42, 0, 0.58, 1.0'
+                repeatCount='indefinite'
+              />
+            </use>
+          </g>
+        </svg>
+      
+      `,
+        }}
+      ></div>
+      <SkewedNavbar
+        onDeleteClick={() => setShowDeletedHabits(!showDeletedHabits)}
+        onCompletedClick={() => setShowCompletedHabits(!showCompletedHabits)}
+        onCategoriesClick={toggleCategoriesDropdown}
+        onThemeClick={toggleTheme}
+        onRegisterClick={toggleRegistration}
+      />
+      {showCategoriesDropdown && (
+        <CategoryDropdown
+          onDeleteCategory={handleDeleteCategory}
+          showCategoriesDropdown={showCategoriesDropdown}
+          onCategorySelect={handleCategorySelect}
+          onCreateCategory={createCategory}
+          categories={categories}
+        />
+      )}
+      <div className='chart-container'>
+        <canvas id='habitsChart'></canvas>
       </div>
       {isRegistrationVisible && (
         <RegistrationForm onClose={toggleRegistration} />
       )}
-
       <h1>Habit Tracker</h1>
-
       <HabitForm
         addHabit={addHabit}
         setSelectedCategory={setSelectedCategory}
+        categories={categories}
+        selectedDate={selectedDate}
+        setSelectedDate={setSelectedDate}
+        setSelectedFrequency={setSelectedFrequency}
+        selectedFrequency={selectedFrequency}
       />
       <HabitList
         habits={habits}
-        favoriteHabits={favoriteHabits}
         updateHabit={updateHabit}
         deleteHabit={deleteHabit}
-        toggleFavorite={toggleFavorite}
         setCompletedHabits={setCompletedHabits}
         selectedCategory={selectedCategory}
         completeHabit={completeHabit}
         setHabits={setHabits}
+        completedHabits={completedHabits}
       />
-
+      <ToastContainer />
       {showDeletedHabits && (
         <DeletedHabits
           deletedHabits={deletedHabits}
           onClose={toggleDeletedHabits}
         />
       )}
-      {showFavoriteHabits && (
-        <FavoriteHabits
-          favoriteHabits={favoriteHabits}
-          setShowFavoriteHabits={setShowFavoriteHabits}
-        />
-      )}
+     
       {showCompletedHabits && (
         <CompletedHabits
           completedHabits={completedHabits}

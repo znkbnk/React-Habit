@@ -1,57 +1,89 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import SkillBar from "./SkillBar";
 
 const HabitList = ({
   habits,
-  favoriteHabits,
-  updateHabit,
-  deleteHabit,
-  toggleFavorite,
   setHabits,
   selectedCategory,
   setCompletedHabits,
+  completedHabits,
 }) => {
-  const [editableHabitIndex, setEditableHabitIndex] = useState(-1);
+  const [unfinishedHabits, setUnfinishedHabits] = useState([]);
+  const [showUnfinished, setShowUnfinished] = useState(false);
 
-  const handleEditClick = (index) => {
-    setEditableHabitIndex(index);
+  const calculatePercentage = (habit) => {
+    if (habit.goalDays === 0) return 100;
+    const completedDays = habit.checkedDates?.length || 0;
+    return (completedDays / habit.initialGoalDays) * 100;
   };
 
-  const handleEditChange = (event, index) => {
-    const updatedHabit = { ...habits[index], name: event.target.value };
-    updateHabit(index, updatedHabit);
-  };
+  useEffect(() => {
+    const savedHabits = JSON.parse(localStorage.getItem("habits")) || [];
+    setHabits(savedHabits);
 
-  const handleEditSave = () => {
-    setEditableHabitIndex(-1);
-  };
+    const savedUnfinishedHabits =
+      JSON.parse(localStorage.getItem("unfinishedHabits")) || [];
+    setUnfinishedHabits(savedUnfinishedHabits);
+  }, [setHabits]);
 
-  const handleCompleteClick = (index) => {
-    const filteredHabits =
-      selectedCategory === "All"
-        ? habits
-        : habits.filter(
-            (habit) => habit.category.trim() === selectedCategory.trim()
-          );
+  useEffect(() => {
+    if (unfinishedHabits.length > 0) {
+      setShowUnfinished(true);
+    }
+  }, [unfinishedHabits]);
 
-    const completedHabit = filteredHabits[index];
-    if (completedHabit.goalDays > 0) {
-      // Decrease the goal days by 1
-      const updatedGoalDays = completedHabit.goalDays - 1;
-      const updatedHabit = { ...completedHabit, goalDays: updatedGoalDays };
+  const handleCheckClick = (habit) => {
+    const currentDate = new Date();
+    const updatedGoalDays = habit.goalDays - 1;
+    const updatedHabit = { ...habit, goalDays: updatedGoalDays };
 
-      // Update the habit in the habits array
-      const updatedHabits = [...habits];
-      updatedHabits[habits.indexOf(completedHabit)] = updatedHabit;
-      setHabits(updatedHabits);
+    const checkedDate = { date: currentDate, goalDays: updatedGoalDays };
+    updatedHabit.checkedDates = [
+      ...(updatedHabit.checkedDates || []),
+      checkedDate,
+    ];
+
+    const updatedHabits = [...habits];
+    const habitIndex = updatedHabits.findIndex((h) => h.key === habit.key);
+    updatedHabits[habitIndex] = updatedHabit;
+    setHabits(updatedHabits);
+
+    localStorage.setItem("habits", JSON.stringify(updatedHabits));
+
+    if (updatedGoalDays === 0) {
+      setCompletedHabits((prevCompletedHabits) => [
+        ...prevCompletedHabits,
+        updatedHabit,
+      ]);
+
+      saveCompletedHabitsToStorage([...completedHabits, updatedHabit]);
+      if (updatedGoalDays > 0) {
+        const unfinished = updatedHabits.filter((h) => h.goalDays > 0);
+        localStorage.setItem("unfinishedHabits", JSON.stringify(unfinished));
+      }
 
       if (updatedGoalDays === 0) {
-        // Move the habit to completedHabits when the goal is achieved
-        setCompletedHabits((prevCompletedHabits) => [
-          ...prevCompletedHabits,
-          updatedHabit,
-        ]);
+        toast.success(
+          `You've completed the habit "${
+            updatedHabit.name
+          }" on ${currentDate.toLocaleString()}`
+        );
+      } else {
+        const daysLeftMessage =
+          updatedGoalDays === 1 ? "1 day left" : `${updatedGoalDays} days left`;
+        toast.success(
+          `You've checked off a day for the habit "${
+            updatedHabit.name
+          }" (${daysLeftMessage}) on ${currentDate.toLocaleString()}.`
+        );
       }
     }
+  };
+
+  const saveCompletedHabitsToStorage = (completedHabits) => {
+    localStorage.setItem("completedHabits", JSON.stringify(completedHabits));
   };
 
   const filteredHabits =
@@ -61,74 +93,105 @@ const HabitList = ({
           (habit) => habit.category.trim() === selectedCategory.trim()
         );
 
+  const handleToggleUnfinished = () => {
+    setShowUnfinished(!showUnfinished);
+  };
+
+  const handleDeleteHabit = (habit) => {
+    if (habit.goalDays === 0) {
+      const updatedHabits = habits.filter((h) => h.key !== habit.key);
+
+      setHabits(updatedHabits);
+      localStorage.setItem("habits", JSON.stringify(updatedHabits));
+
+      setCompletedHabits((prevCompletedHabits) => [
+        ...prevCompletedHabits,
+        { ...habit, goalDays: habit.initialGoalDays },
+      ]);
+
+      saveCompletedHabitsToStorage(completedHabits);
+
+      toast.error(
+        `Finished habit "${habit.name}" has been moved to Completed Habits.`
+      );
+    } else {
+      toast.error(`Unfinished habit "${habit.name}" cannot be deleted.`);
+    }
+  };
+
   return (
-    <ul>
-      {filteredHabits.map((habit, index) => (
-        <li key={index}>
-          {habit?.category ? (
-            <>
-              {editableHabitIndex === index ? (
-                <div>
-                  <input
-                    type='text'
-                    value={habit.name}
-                    onChange={(e) => handleEditChange(e, index)}
-                  />
-                  <button onClick={handleEditSave}>Save</button>
-                </div>
-              ) : (
-                <div className='completed-habits-modal'>
+    <div>
+      <button onClick={handleToggleUnfinished}>
+        {showUnfinished ? "Show Finished Habits" : "Show Unfinished Habits"}
+      </button>
+      <ul className='habitlist-buttons'>
+        {filteredHabits
+          .filter((habit) => {
+            if (showUnfinished) {
+              return habit.goalDays > 0;
+            } else {
+              return habit.goalDays === 0;
+            }
+          })
+          .map((habit, index) => (
+            <li key={index}>
+              {habit?.category ? (
+                <div id='completed-habits-modal'>
                   <div className='completed-habits-content'>
                     <h2>Category: {habit.category}</h2>
                     <div>
                       <span>Habit Name: {habit.name}</span>
                       <br />
-
+                      <span>
+                        Date:{" "}
+                        {habit.date instanceof Date && !isNaN(habit.date)
+                          ? habit.date.toDateString()
+                          : habit.date || "Invalid Date"}
+                      </span>
                       {habit.goalDays > 0 ? (
                         <p>
                           Goal: {habit.goalDays}{" "}
                           {habit.goalDays === 1 ? "day" : "days"} left
+                          <br />
+                          <br />
+                          <br />
+                          <SkillBar percentage={calculatePercentage(habit)} />
+                          {habit?.notes && <p>Notes: {habit.notes}</p>}
                         </p>
                       ) : (
                         <></>
                       )}
                       {habit.goalDays === 0 ? (
                         <p>
-                          Goal achieved in {habit.initialGoalDays}{" "}
+                          Goal achieved in: {habit.initialGoalDays}{" "}
                           {habit.initialGoalDays === 1 ? "day" : "days"}
-                        </p>
-                      ) : (
-                        <div>
-                          <button onClick={() => handleEditClick(index)}>
-                            Edit
-                          </button>
-                          <button onClick={() => deleteHabit(index)}>
-                            Delete
-                          </button>
                           <button
-                            className={
-                              favoriteHabits.includes(habit)
-                                ? "favorite-button favorite"
-                                : "favorite-button"
-                            }
-                            onClick={() => toggleFavorite(index)}
+                            onClick={() => handleDeleteHabit(habit)}
+                            disabled={habit.goalDays > 0}
                           >
-                            Favorite
+                            DELETE
                           </button>
-                          <button onClick={() => handleCompleteClick(index)}>
-                            Complete
+                        </p>
+                        
+                      ) : (
+                        <div className='habitlist-button'>
+                          <button
+                            onClick={() => handleCheckClick(habit)}
+                            disabled={habit.goalDays <= 0}
+                          >
+                            CHECK
                           </button>
+                          
                         </div>
                       )}
                     </div>
                   </div>
                 </div>
-              )}
-            </>
-          ) : null}
-        </li>
-      ))}
-    </ul>
+              ) : null}
+            </li>
+          ))}
+      </ul>
+    </div>
   );
 };
 
