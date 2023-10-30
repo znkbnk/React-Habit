@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import HabitForm from "./HabitForm";
 import HabitList from "./HabitList";
-import DeletedHabits from "./DeletedHabits";
 import emailjs from "emailjs-com";
 import CompletedHabits from "./CompletedHabits";
 import CategoryDropdown from "./CategoryDropdown";
@@ -10,7 +9,6 @@ import Chart from "chart.js/auto";
 import SkewedNavbar from "./SkewedNavbar";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
 
 const setThemePreference = (theme) => {
   localStorage.setItem("theme", theme);
@@ -21,14 +19,12 @@ const getThemePreference = () => {
 };
 
 function App() {
-
   const initialHabits = JSON.parse(localStorage.getItem("habits")) || [];
-  const initialCategories = JSON.parse(localStorage.getItem("categories")) || [];
+  const initialCategories =
+    JSON.parse(localStorage.getItem("categories")) || [];
 
   const [habits, setHabits] = useState(initialHabits);
   const [categories, setCategories] = useState(initialCategories);
-
-  const [deletedHabits, setDeletedHabits] = useState([]);
   const [showDeletedHabits, setShowDeletedHabits] = useState(false);
   const [completedHabits, setCompletedHabits] = useState([]);
   const [showCompletedHabits, setShowCompletedHabits] = useState(false);
@@ -39,8 +35,6 @@ function App() {
   const [completedHabitsData, setCompletedHabitsData] = useState({});
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedFrequency, setSelectedFrequency] = useState("none");
-
-
 
   useEffect(() => {
     const storedCategories = localStorage.getItem("categories");
@@ -65,23 +59,6 @@ function App() {
     localStorage.setItem("habits", JSON.stringify(habits));
     localStorage.setItem("categories", JSON.stringify(categories));
   }, [habits, categories]);
-
-
-  const getDeletedHabitsFromStorage = () => {
-    const deletedHabitsString = localStorage.getItem("deletedHabits");
-    return deletedHabitsString ? JSON.parse(deletedHabitsString) : [];
-  };
-
-  // Load deleted habits from local storage when the component mounts
-  useEffect(() => {
-    const storedDeletedHabits = getDeletedHabitsFromStorage();
-    setDeletedHabits(storedDeletedHabits);
-  }, []);
-
-  // Function to save deleted habits to local storage
-  const saveDeletedHabitsToStorage = (deletedHabits) => {
-    localStorage.setItem("deletedHabits", JSON.stringify(deletedHabits));
-  };
 
   useEffect(() => {
     const data = {};
@@ -172,7 +149,7 @@ function App() {
     }
   }, [completedHabitsData, theme]);
 
-    const addHabit = (habit) => {
+  const addHabit = (habit) => {
     const timestamp = new Date().getTime();
     habit.key = timestamp;
     habit.initialGoalDays = habit.goalDays;
@@ -241,21 +218,6 @@ function App() {
     updatedHabits[index] = updatedHabit;
     setHabits(updatedHabits);
   };
-
-  const deleteHabit = (index) => {
-    const deletedHabit = habits[index];
-    const updatedHabits = habits.filter((_, i) => i !== index);
-    setHabits(updatedHabits);
-    setDeletedHabits([...deletedHabits, deletedHabit]);
-    saveDeletedHabitsToStorage([...deletedHabits, deletedHabit]);
-
-    
-  };
-
-  const toggleDeletedHabits = () => {
-    setShowDeletedHabits(!showDeletedHabits);
-  };
-
 
   const toggleCategoriesDropdown = () => {
     setShowCategoriesDropdown(!showCategoriesDropdown);
@@ -422,7 +384,6 @@ function App() {
       <HabitList
         habits={habits}
         updateHabit={updateHabit}
-        deleteHabit={deleteHabit}
         setCompletedHabits={setCompletedHabits}
         selectedCategory={selectedCategory}
         completeHabit={completeHabit}
@@ -430,13 +391,7 @@ function App() {
         completedHabits={completedHabits}
       />
       <ToastContainer />
-      {showDeletedHabits && (
-        <DeletedHabits
-          deletedHabits={deletedHabits}
-          onClose={toggleDeletedHabits}
-        />
-      )}
-     
+
       {showCompletedHabits && (
         <CompletedHabits
           completedHabits={completedHabits}

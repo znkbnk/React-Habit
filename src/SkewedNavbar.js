@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import "./Sidebar.css";
 
 export default function SkewedNavbar(props) {
-  const [showDeletedHabits, setShowDeletedHabits] = useState(false);
   const [completedHabits, setCompletedHabits] = useState([]);
   const [showCategoriesDropdown, setShowCategoriesDropdown] = useState(false);
   const [theme, setTheme] = useState("light");
@@ -13,10 +12,6 @@ export default function SkewedNavbar(props) {
     setIsBlackBackground((prev) => !prev);
   };
 
-  const handleDeleteClick = () => {
-    setShowDeletedHabits(!showDeletedHabits);
-    props.onDeleteClick();
-  };
 
   const handleRegisterClick = () => {
     setIsRegistrationVisible(!isRegistrationVisible);
@@ -43,53 +38,7 @@ export default function SkewedNavbar(props) {
   return (
     <div>
       <ul className='navbar'>
-        <li>
-          <button
-            className='nav-dark skewed-button'
-            onClick={handleDeleteClick}
-          >
-            <span>
-              <svg
-                xmlns='http://www.w3.org/2000/svg'
-                width={192}
-                height={192}
-                fill='currentColor'
-                viewBox='0 0 256 256'
-              >
-                <rect width={256} height={256} fill='none' />
-                <circle
-                  cx={128}
-                  cy={128}
-                  r={96}
-                  fill='none'
-                  stroke='currentColor'
-                  strokeLinecap='round'
-                  strokeLinejoin='round'
-                  strokeWidth={16}
-                />
-                <circle
-                  cx={128}
-                  cy={120}
-                  r={40}
-                  fill='none'
-                  stroke='currentColor'
-                  strokeLinecap='round'
-                  strokeLinejoin='round'
-                  strokeWidth={16}
-                />
-                <path
-                  d='M63.79905,199.37405a72.02812,72.02812,0,0,1,128.40177-.00026'
-                  fill='none'
-                  stroke='currentColor'
-                  strokeLinecap='round'
-                  strokeLinejoin='round'
-                  strokeWidth={16}
-                />
-              </svg>
-              Deleted
-            </span>
-          </button>
-        </li>
+        
         
         <li>
           <button
