@@ -91,27 +91,6 @@ button {
   border-top-left-radius: 0;
 }
 
-.deleted-delete-button {
-  color: #333;
-  padding: 5px 10px;
-  border-radius: 10px;
-  cursor: pointer;
-  width: 5%;
-  display: flex;
-  justify-content: center;
-  margin: 0;
-}
-.favorite-delete-button {
-  color: #333;
-  padding: 5px 10px;
-  border-radius: 10px;
-  cursor: pointer;
-  width: 5%;
-  display: flex;
-  justify-content: center;
-  margin: 0;
-}
-
 .dark button {
   background-color: #333;
   color: #fff;
@@ -176,14 +155,6 @@ li:last-child {
   display: flex;
   white-space: nowrap;
   width: 100%;
-}
-
-.delete-button {
-  color: #333;
-  border-radius: 10px;
-  width: 5%;
-  display: flex;
-  justify-content: center;
 }
 
 .habitlist-button button {
@@ -433,7 +404,6 @@ li:last-child {
   right: 0;
   transform: translateX(50%);
   z-index: 2;
-
 }
 .skill-per:after {
   content: "";

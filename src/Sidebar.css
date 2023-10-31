@@ -124,10 +124,11 @@ li {
 }
 
 .dark li:last-child .skewed-button {
-  background-color: #fff;
+  background-color: #f7f7f7;
 }
 
 .skewed-button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
+
