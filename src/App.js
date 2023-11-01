@@ -22,7 +22,6 @@ function App() {
   const initialHabits = JSON.parse(localStorage.getItem("habits")) || [];
   const initialCategories =
     JSON.parse(localStorage.getItem("categories")) || [];
-
   const [habits, setHabits] = useState(initialHabits);
   const [categories, setCategories] = useState(initialCategories);
   const [showDeletedHabits, setShowDeletedHabits] = useState(false);
@@ -363,6 +362,7 @@ function App() {
           onCategorySelect={handleCategorySelect}
           onCreateCategory={createCategory}
           categories={categories}
+          setShowCategoriesDropdown={setShowCategoriesDropdown}
         />
       )}
       <div className='chart-container'>

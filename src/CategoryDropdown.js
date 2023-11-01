@@ -1,16 +1,32 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 const CategoryDropdown = ({
   showCategoriesDropdown,
   onCategorySelect,
-  onDeleteCategory, 
+  onDeleteCategory,
   selectedCategory,
   onCreateCategory,
   categories,
+  setShowCategoriesDropdown,
 }) => {
   const [newCategory, setNewCategory] = useState("");
-
   const [dropdownWidth, setDropdownWidth] = useState(150);
+  const dropdownRef = useRef(null);
+  
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        showCategoriesDropdown && setShowCategoriesDropdown(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [setShowCategoriesDropdown, showCategoriesDropdown]);
 
   const handleNewCategoryChange = (event) => {
     setNewCategory(event.target.value);
@@ -25,7 +41,6 @@ const CategoryDropdown = ({
     }
   };
 
-  
   const defaultCategories = ["All"];
 
   useEffect(() => {
@@ -39,7 +54,11 @@ const CategoryDropdown = ({
 
   return (
     showCategoriesDropdown && (
-      <div className='dropdown-content' style={{ width: `${dropdownWidth}px` }}>
+      <div
+        ref={dropdownRef}
+        className='dropdown-content'
+        style={{ width: `${dropdownWidth}px` }}
+      >
         {defaultCategories.map((category, index) => (
           <div key={index} className='category-item-all'>
             <button
