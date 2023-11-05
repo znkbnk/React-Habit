@@ -1,8 +1,11 @@
 import React, { useState } from "react";
 import "./Sidebar.css";
 
+import "animate.css";
+
 export default function SkewedNavbar(props) {
-  const [completedHabits, setCompletedHabits] = useState([]);
+  const { showChart, setShowChart, setIsContactFormVisible } = props;
+
   const [showCategoriesDropdown, setShowCategoriesDropdown] = useState(false);
   const [theme, setTheme] = useState("light");
   const [isBlackBackground, setIsBlackBackground] = useState(false);
@@ -12,16 +15,13 @@ export default function SkewedNavbar(props) {
     setIsBlackBackground((prev) => !prev);
   };
 
-
   const handleRegisterClick = () => {
     setIsRegistrationVisible(!isRegistrationVisible);
     props.onRegisterClick();
   };
 
- 
-
   const handleCompletedClick = () => {
-    setCompletedHabits(!completedHabits);
+    setShowChart(!showChart); 
     props.onCompletedClick();
   };
 
@@ -34,12 +34,13 @@ export default function SkewedNavbar(props) {
     setTheme(!theme);
     props.onThemeClick();
   };
+  const handleContactUsClick = () => {
+    setIsContactFormVisible(true);
+  };
 
   return (
     <div>
       <ul className='navbar'>
-        
-        
         <li>
           <button
             className='nav-dark skewed-button'
@@ -282,6 +283,14 @@ export default function SkewedNavbar(props) {
             </span>
           </button>
         </li>
+        <button
+          className='contaus-icon animate__animated animate__heartBeat'
+          onClick={handleContactUsClick}
+        >
+          <span>
+            <i className='fas fa-envelope'></i> {/* Contact Us icon */}
+          </span>
+        </button>
       </ul>
     </div>
   );

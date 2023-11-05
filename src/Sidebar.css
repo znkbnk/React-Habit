@@ -37,7 +37,7 @@ li:first-child .skewed-button {
   border-radius: 8px 0 0 8px;
 }
 
-li:last-child .skewed-button {
+ li:nth-child(-n+4) .skewed-button {
   border-radius: 0 8px 8px 0;
   margin-top: -1px;
   border: none;

@@ -32,36 +32,55 @@ const RegistrationForm = ({ onClose }) => {
         <form onSubmit={handleSubmit}>
           <div>
             <label htmlFor='username'>Username:</label>
-            <input
-              type='text'
-              id='username'
-              name='username'
-              value={formData.username}
-              onChange={handleChange}
-              required
-            />
+            <div>
+              <input
+                type='text'
+                id='username'
+                name='username'
+                value={formData.username}
+                onChange={handleChange}
+                required
+              />
+            </div>
           </div>
           <div>
             <label htmlFor='email'>Email:</label>
-            <input
-              type='email'
-              id='email'
-              name='email'
-              value={formData.email}
-              onChange={handleChange}
-              required
-            />
+            <div>
+              <input
+                type='email'
+                id='email'
+                name='email'
+                value={formData.email}
+                onChange={handleChange}
+                required
+              />
+            </div>
           </div>
           <div>
             <label htmlFor='password'>Password:</label>
-            <input
-              type='password'
-              id='password'
-              name='password'
-              value={formData.password}
-              onChange={handleChange}
-              required
-            />
+            <div>
+              <input
+                type='password'
+                id='password'
+                name='password'
+                value={formData.password}
+                onChange={handleChange}
+                required
+              />
+            </div>
+          </div>
+          <div>
+            <label htmlFor='password'>Re-Password:</label>
+            <div>
+              <input
+                type='password'
+                id='password'
+                name='password'
+                value={formData.password}
+                onChange={handleChange}
+                required
+              />
+            </div>
           </div>
           <div className='button-container'>
             <button type='submit' className='form-button'>

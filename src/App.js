@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import HabitForm from "./HabitForm";
 import HabitList from "./HabitList";
 import emailjs from "emailjs-com";
@@ -9,6 +9,7 @@ import Chart from "chart.js/auto";
 import SkewedNavbar from "./SkewedNavbar";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import ContactUsForm from "./ContactUsForm";
 
 const setThemePreference = (theme) => {
   localStorage.setItem("theme", theme);
@@ -22,6 +23,8 @@ function App() {
   const initialHabits = JSON.parse(localStorage.getItem("habits")) || [];
   const initialCategories =
     JSON.parse(localStorage.getItem("categories")) || [];
+  const [showChart, setShowChart] = useState(false);
+  const [isContactFormVisible, setIsContactFormVisible] = useState(false);
   const [habits, setHabits] = useState(initialHabits);
   const [categories, setCategories] = useState(initialCategories);
   const [showDeletedHabits, setShowDeletedHabits] = useState(false);
@@ -34,6 +37,8 @@ function App() {
   const [completedHabitsData, setCompletedHabitsData] = useState({});
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedFrequency, setSelectedFrequency] = useState("none");
+  const chartRef = useRef();
+
 
   useEffect(() => {
     const storedCategories = localStorage.getItem("categories");
@@ -80,73 +85,74 @@ function App() {
 
   useEffect(() => {
     const showChart = (completedHabitsData) => {
-      const canvas = document.getElementById("habitsChart");
-      const ctx = canvas.getContext("2d");
+      if (showChart && chartRef.current) {
+        const canvas = document.getElementById("habitsChart");
+        const ctx = canvas.getContext("2d");
 
-      if (window.myChart) {
-        window.myChart.destroy();
+        if (window.myChart) {
+          window.myChart.destroy();
+        }
+        const tickColor = theme === "light" ? "black" : "white";
+        window.myChart = new Chart(ctx, {
+          type: "bar",
+          data: {
+            labels: Object.keys(completedHabitsData),
+            datasets: [
+              {
+                label: "Completed Habits by Category",
+                data: Object.values(completedHabitsData),
+                backgroundColor: [
+                  "rgba(255, 99, 132, 0.2)",
+                  "rgba(54, 162, 235, 0.2)",
+                  "rgba(255, 206, 86, 0.2)",
+                  "rgba(75, 192, 192, 0.2)",
+                  "rgba(153, 102, 255, 0.2)",
+                  "rgba(255, 159, 64, 0.2)",
+                ],
+
+                borderColor: [
+                  "rgba(255, 99, 132, 1)",
+                  "rgba(54, 162, 235, 1)",
+                  "rgba(255, 206, 86, 1)",
+                  "rgba(75, 192, 192, 1)",
+                  "rgba(153, 102, 255, 1)",
+                  "rgba(255, 159, 64, 1)",
+                ],
+                borderWidth: 1,
+              },
+            ],
+          },
+          options: {
+            plugins: {
+              legend: {
+                labels: {
+                  color: tickColor,
+                },
+              },
+            },
+            scales: {
+              x: {
+                beginAtZero: true,
+                ticks: {
+                  color: tickColor,
+                },
+              },
+              y: {
+                beginAtZero: true,
+                stepSize: 1,
+                ticks: {
+                  color: tickColor,
+                },
+              },
+            },
+          },
+        });
       }
-      const tickColor = theme === "light" ? "black" : "white";
-      window.myChart = new Chart(ctx, {
-        type: "bar",
-        data: {
-          labels: Object.keys(completedHabitsData),
-          datasets: [
-            {
-              label: "Completed Habits by Category",
-              data: Object.values(completedHabitsData),
-              backgroundColor: [
-                "rgba(255, 99, 132, 0.2)",
-                "rgba(54, 162, 235, 0.2)",
-                "rgba(255, 206, 86, 0.2)",
-                "rgba(75, 192, 192, 0.2)",
-                "rgba(153, 102, 255, 0.2)",
-                "rgba(255, 159, 64, 0.2)",
-              ],
-
-              borderColor: [
-                "rgba(255, 99, 132, 1)",
-                "rgba(54, 162, 235, 1)",
-                "rgba(255, 206, 86, 1)",
-                "rgba(75, 192, 192, 1)",
-                "rgba(153, 102, 255, 1)",
-                "rgba(255, 159, 64, 1)",
-              ],
-              borderWidth: 1,
-            },
-          ],
-        },
-        options: {
-          plugins: {
-            legend: {
-              labels: {
-                color: tickColor,
-              },
-            },
-          },
-          scales: {
-            x: {
-              beginAtZero: true,
-              ticks: {
-                color: tickColor,
-              },
-            },
-            y: {
-              beginAtZero: true,
-              stepSize: 1,
-              ticks: {
-                color: tickColor,
-              },
-            },
-          },
-        },
-      });
     };
-
     if (completedHabitsData) {
       showChart(completedHabitsData);
     }
-  }, [completedHabitsData, theme]);
+  }, [completedHabitsData, theme, showChart]);
 
   const addHabit = (habit) => {
     const timestamp = new Date().getTime();
@@ -199,10 +205,10 @@ function App() {
 
     emailjs
       .send(
-        "service_1n4gsgx",
-        "template_mgjx1fd",
+        "YOUR_EMAILJS_SERVICE_ID",
+        "YOUR_EMAILJS_TEMPLATE_ID",
         templateParams,
-        "u4-0CXt6mlWQViI6d"
+        "YOUR_EMAILJS_USER_ID"
       )
       .then((response) => {
         console.log("Email sent:", response);
@@ -266,6 +272,17 @@ function App() {
       setCategories((prevCategories) => [...prevCategories, newCategory]);
     }
   };
+
+    const closeCompletedHabits = () => {
+      setShowCompletedHabits(false);
+      setShowChart(false); // Hide the chart when closing CompletedHabits
+    };
+
+    const handleContactSubmit = (formData) => {
+      // Handle the form data, e.g., send it to a server or perform any necessary actions.
+      console.log("Contact form data submitted:", formData);
+      // You can add your logic to send this data to a server or store it as needed.
+    };
 
   return (
     <div className={`app-container ${theme}`}>
@@ -354,6 +371,9 @@ function App() {
         onCategoriesClick={toggleCategoriesDropdown}
         onThemeClick={toggleTheme}
         onRegisterClick={toggleRegistration}
+        showChart={showChart}
+        setShowChart={setShowChart}
+        setIsContactFormVisible={setIsContactFormVisible}
       />
       {showCategoriesDropdown && (
         <CategoryDropdown
@@ -365,11 +385,21 @@ function App() {
           setShowCategoriesDropdown={setShowCategoriesDropdown}
         />
       )}
-      <div className='chart-container'>
-        <canvas id='habitsChart'></canvas>
-      </div>
+      {showChart && (
+        <div className='chart-container'>
+          <canvas id='habitsChart' ref={chartRef}></canvas>
+        </div>
+      )}
+
       {isRegistrationVisible && (
         <RegistrationForm onClose={toggleRegistration} />
+      )}
+      {isContactFormVisible && (
+        <ContactUsForm
+          onClose={() => setIsContactFormVisible(false)}
+          onContactSubmit={handleContactSubmit}
+          setIsContactFormVisible={setIsContactFormVisible}
+        />
       )}
       <h1>Habit Tracker</h1>
       <HabitForm
@@ -395,7 +425,7 @@ function App() {
       {showCompletedHabits && (
         <CompletedHabits
           completedHabits={completedHabits}
-          onClose={() => setShowCompletedHabits(false)}
+          onClose={closeCompletedHabits}
         />
       )}
     </div>
