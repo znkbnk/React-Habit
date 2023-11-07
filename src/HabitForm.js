@@ -189,4 +189,4 @@ const HabitForm = ({
   );
 };
 
-export default HabitForm;
+export default HabitForm
