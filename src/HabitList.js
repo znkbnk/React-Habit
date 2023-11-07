@@ -204,4 +204,4 @@ const HabitList = ({
   );
 };
 
-export default HabitList;
+export default HabitList
