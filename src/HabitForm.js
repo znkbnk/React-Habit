@@ -22,7 +22,6 @@ const HabitForm = ({
   const [uniqueCategories, setUniqueCategories] = useState([]);
 
   useEffect(() => {
-    // Filter out duplicate categories and include default categories
     const defaultCategories = [];
     const filteredCategories = categories.filter(
       (category) => !defaultCategories.includes(category)
@@ -49,7 +48,7 @@ const HabitForm = ({
         goalDays,
         initialGoalDays: goalDays,
       }));
-      setGoalDaysError(""); // Clear error message
+      setGoalDaysError(""); 
     } else {
       setGoalDaysError("Number must be higher than 0");
     }
@@ -66,15 +65,19 @@ const HabitForm = ({
   const handleFormSubmit = (event) => {
     event.preventDefault();
     if (habit.name.trim() !== "" && habit.category !== "") {
-      // Ensure that 'category' is not empty
+      const currentDate = new Date();
       const habitWithCategory = {
         ...habit,
         name: `${habit.name}`,
         category: habit.category,
+        date: currentDate,
       };
+
+       if (selectedFrequency !== "none") {
+         habitWithCategory.selectedDate = selectedDate;
+       }
       addHabit(habitWithCategory);
 
-      // Set the selected category to the newly added habit's category
       setSelectedCategory(habit.category);
 
       setHabit({
@@ -94,6 +97,10 @@ const HabitForm = ({
       notes: event.target.value,
     }));
   };
+
+  const handleDateChange = (date) => {
+  setSelectedDate(date);
+};
 
   return (
     <div className='habit-form'>
@@ -168,7 +175,7 @@ const HabitForm = ({
             <div className='custom-calendar'>
               <label htmlFor='selectedDate'>Select Date:</label>
               <Calendar
-                onChange={setSelectedDate}
+                onChange={handleDateChange}
                 value={selectedDate}
                 minDate={new Date()}
                 required

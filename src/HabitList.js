@@ -9,6 +9,7 @@ const HabitList = ({
   selectedCategory,
   setCompletedHabits,
   completedHabits,
+  currentDate,
 }) => {
   const [unfinishedHabits, setUnfinishedHabits] = useState([]);
   const [showUnfinished, setShowUnfinished] = useState(false);
@@ -143,10 +144,20 @@ const HabitList = ({
                       <span>Habit Name: {habit.name}</span>
                       <br />
                       <span>
-                        Date:{" "}
+                        Created Date:{" "}
                         {habit.date instanceof Date && !isNaN(habit.date)
                           ? habit.date.toDateString()
-                          : habit.date || "Invalid Date"}
+                          : "Not specified"}{" "}
+                        {/* Use currentDate from props */}
+                      </span>
+                      <br />
+                      <span>
+                        Selected Date:{" "}
+                        {habit.selectedDate instanceof Date &&
+                        !isNaN(habit.selectedDate)
+                          ? habit.selectedDate.toDateString()
+                          : "Not specified"}{" "}
+                        {/* Use selectedDate from the habit or "Not specified" */}
                       </span>
                       {habit.goalDays > 0 ? (
                         <p>
@@ -172,7 +183,6 @@ const HabitList = ({
                             DELETE
                           </button>
                         </p>
-                        
                       ) : (
                         <div className='habitlist-button'>
                           <button
@@ -181,7 +191,6 @@ const HabitList = ({
                           >
                             CHECK
                           </button>
-                          
                         </div>
                       )}
                     </div>
