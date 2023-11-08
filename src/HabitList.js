@@ -22,7 +22,13 @@ const HabitList = ({
 
   useEffect(() => {
     const savedHabits = JSON.parse(localStorage.getItem("habits")) || [];
-    setHabits(savedHabits);
+    // Convert date strings back to Date objects
+    const parsedHabits = savedHabits.map((habit) => ({
+      ...habit,
+      date: new Date(habit.date),
+      selectedDate: new Date(habit.selectedDate),
+    }));
+    setHabits(parsedHabits);
 
     const savedUnfinishedHabits =
       JSON.parse(localStorage.getItem("unfinishedHabits")) || [];
@@ -148,7 +154,6 @@ const HabitList = ({
                         {habit.date instanceof Date && !isNaN(habit.date)
                           ? habit.date.toDateString()
                           : "Not specified"}{" "}
-                        {/* Use currentDate from props */}
                       </span>
                       <br />
                       <span>
@@ -157,7 +162,6 @@ const HabitList = ({
                         !isNaN(habit.selectedDate)
                           ? habit.selectedDate.toDateString()
                           : "Not specified"}{" "}
-                        {/* Use selectedDate from the habit or "Not specified" */}
                       </span>
                       {habit.goalDays > 0 ? (
                         <p>
@@ -204,4 +208,4 @@ const HabitList = ({
   );
 };
 
-export default HabitList
+export default HabitList;
