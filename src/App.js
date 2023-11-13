@@ -419,6 +419,7 @@ function App() {
         completeHabit={completeHabit}
         setHabits={setHabits}
         completedHabits={completedHabits}
+        setSelectedDate={setSelectedDate}
       />
       <ToastContainer />
 

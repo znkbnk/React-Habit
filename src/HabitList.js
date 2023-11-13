@@ -9,7 +9,6 @@ const HabitList = ({
   selectedCategory,
   setCompletedHabits,
   completedHabits,
-  currentDate,
 }) => {
   const [unfinishedHabits, setUnfinishedHabits] = useState([]);
   const [showUnfinished, setShowUnfinished] = useState(false);
@@ -26,7 +25,13 @@ const HabitList = ({
     const parsedHabits = savedHabits.map((habit) => ({
       ...habit,
       date: new Date(habit.date),
-      selectedDate: new Date(habit.selectedDate),
+      selectedDate: habit.selectedDate ? new Date(habit.selectedDate) : null,
+      selectedDateRange: habit.selectedDateRange
+        ? {
+            start: new Date(habit.selectedDateRange.start),
+            end: new Date(habit.selectedDateRange.end),
+          }
+        : null,
     }));
     setHabits(parsedHabits);
 
@@ -97,7 +102,8 @@ const HabitList = ({
     selectedCategory === "All"
       ? habits
       : habits.filter(
-          (habit) => habit.category.trim() === selectedCategory.trim()
+          (habit) =>
+            habit.category && habit.category.trim() === selectedCategory.trim()
         );
 
   const handleToggleUnfinished = () => {
@@ -157,11 +163,19 @@ const HabitList = ({
                       </span>
                       <br />
                       <span>
-                        Selected Date:{" "}
-                        {habit.selectedDate instanceof Date &&
-                        !isNaN(habit.selectedDate)
-                          ? habit.selectedDate.toDateString()
-                          : "Not specified"}{" "}
+                        {habit.selectedDateRange
+                          ? `Date Range: ${
+                              habit.selectedDateRange.start instanceof Date
+                                ? habit.selectedDateRange.start.toDateString()
+                                : "Not specified"
+                            } - ${
+                              habit.selectedDateRange.end instanceof Date
+                                ? habit.selectedDateRange.end.toDateString()
+                                : "Not specified"
+                            }`
+                          : habit.selectedDate instanceof Date
+                          ? `Selected Date: ${habit.selectedDate.toDateString()}`
+                          : "Selected Date: Not specified"}
                       </span>
                       {habit.goalDays > 0 ? (
                         <p>

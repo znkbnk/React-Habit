@@ -20,6 +20,8 @@ const HabitForm = ({
   });
   const [goalDaysError, setGoalDaysError] = useState("");
   const [uniqueCategories, setUniqueCategories] = useState([]);
+   const [startDate, setStartDate] = useState(null);
+   const [endDate, setEndDate] = useState(null);
 
   useEffect(() => {
     const defaultCategories = [];
@@ -62,34 +64,46 @@ const HabitForm = ({
     }));
   };
 
-  const handleFormSubmit = (event) => {
-    event.preventDefault();
-    if (habit.name.trim() !== "" && habit.category !== "") {
-      const currentDate = new Date();
-      const habitWithCategory = {
-        ...habit,
-        name: `${habit.name}`,
-        category: habit.category,
-        date: currentDate,
-      };
+ const handleFormSubmit = (event) => {
+   event.preventDefault();
+   if (habit.name && habit.name.trim() !== "" && habit.category !== "") {
+     const currentDate = new Date();
+     const habitWithCategory = {
+       ...habit,
+       name: `${habit.name}`,
+       category: habit.category,
+       date: currentDate,
+     };
 
-       if (selectedFrequency !== "none") {
+     if (selectedFrequency !== "none") {
+       if (selectedFrequency === "weekly" && startDate && endDate) {
+         habitWithCategory.selectedDateRange = {
+           start: startDate,
+           end: endDate,
+         };
+       } else {
          habitWithCategory.selectedDate = selectedDate;
        }
-      addHabit(habitWithCategory);
+     }
 
-      setSelectedCategory(habit.category);
+     addHabit(habitWithCategory);
 
-      setHabit({
-        name: "",
-        reminderTime: "",
-        goalDays: "",
-        initialGoalDays: "",
-        category: "",
-        notes: "",
-      });
-    }
-  };
+     setSelectedCategory(habit.category);
+
+     setHabit({
+       name: "",
+       reminderTime: "",
+       goalDays: "",
+       initialGoalDays: "",
+       category: "",
+       notes: "",
+     });
+
+     // Reset start and end dates
+     setStartDate(null);
+     setEndDate(null);
+   }
+ };
 
   const handleNotesChange = (event) => {
     setHabit((prevHabit) => ({
@@ -98,9 +112,66 @@ const HabitForm = ({
     }));
   };
 
-  const handleDateChange = (date) => {
-  setSelectedDate(date);
+ const handleDateChange = (date) => {
+   setSelectedDate(date);
+
+   // Check if a frequency is selected and a start date is not set yet
+   if (selectedFrequency !== "none" && !startDate) {
+     setStartDate(date);
+
+     // Only set the end date for weekly frequency
+     if (selectedFrequency === "weekly") {
+       const endDate = new Date(date.getTime() + 6 * 24 * 60 * 60 * 1000);
+       setEndDate(endDate);
+       setHabit((prevHabit) => ({
+         ...prevHabit,
+         goalDays: 7,
+         initialGoalDays: 7, 
+       }));
+     }
+   }
+ };
+
+const tileContent = ({ date, view }) => {
+  if (selectedFrequency === "weekly" && startDate && endDate) {
+    // Check if the date is within the selected range
+    if (date >= startDate && date <= endDate) {
+      // Check if the date is the start date
+      if (date.getTime() === startDate.getTime()) {
+        return (
+          <div className='calendar-button start-date-button'>
+            <span className='start-date'>Start</span>
+          </div>
+        );
+      }
+      // Check if the date is the end date
+      else if (date.getTime() === endDate.getTime()) {
+        return (
+          <div className='calendar-button end-date-button'>
+            <span className='end-date'>End</span>
+          </div>
+        );
+      }
+    }
+  }
+  return null;
 };
+
+const tileClassName = ({ date }) => {
+  if (selectedFrequency === "weekly" && startDate && endDate) {
+    if (date.getTime() === startDate.getTime()) {
+      return "start-date-tile";
+    } else if (date.getTime() === endDate.getTime()) {
+      return "end-date-tile";
+    }
+  }
+  return null;
+};
+
+  const handleFrequencyChange = (e) => {
+    setSelectedFrequency(e.target.value);
+    console.log("Selected Frequency:", e.target.value);
+  };
 
   return (
     <div className='habit-form'>
@@ -154,10 +225,7 @@ const HabitForm = ({
             </select>
           </div>
 
-          <select
-            onChange={(e) => setSelectedFrequency(e.target.value)}
-            value={selectedFrequency}
-          >
+          <select onChange={handleFrequencyChange} value={selectedFrequency}>
             <option value='none'>Select Frequency</option>
             <option value='daily'>Daily</option>
             <option value='weekly'>Weekly</option>
@@ -178,6 +246,8 @@ const HabitForm = ({
                 onChange={handleDateChange}
                 value={selectedDate}
                 minDate={new Date()}
+                tileContent={tileContent}
+                tileClassName={tileClassName}
                 required
               />
             </div>

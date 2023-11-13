@@ -313,9 +313,28 @@ li:last-child {
   border-radius: 20px;
 }
 
+
 .custom-calendar {
   padding-bottom: 20px;
+  
 }
+
+.calendar-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.start-date-tile {
+  background-color: green;
+  color: #fff;
+}
+
+.end-date-tile {
+  background-color: red;
+  color: #fff;
+}
+
 
 /* completedhabits presence */
 
