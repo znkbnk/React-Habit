@@ -78,13 +78,14 @@ select {
 }
 
 button {
-  width: 100%;
+  max-width: 100%;
   border: none;
   border-radius: 10px;
   cursor: pointer;
   text-align: center;
   padding: 10px;
   background-color: #ccc;
+  
 }
 
 .category-button {
@@ -112,10 +113,11 @@ ul {
 
 li {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   padding: 0.5rem 0;
   border-bottom: 1px solid #ccc;
+  max-width: auto;
 }
 
 li:last-child {
@@ -156,6 +158,10 @@ li:last-child {
   display: flex;
   white-space: nowrap;
   width: 100%;
+  display: flex;
+  justify-content: space-between;
+  text-align: center;
+  
 }
 
 .habitlist-button button {
@@ -343,6 +349,7 @@ li:last-child {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 10px;
+  
 }
 
 .completed-delete-button {
@@ -399,14 +406,22 @@ li:last-child {
 }
 
 .skill-bar {
+  display: flex;
+  align-items: center;
   height: 20px;
-  background-color: #00283a;
+  background-color: #999;
   border-radius: 8px;
+  max-width: 100%;
+}
+
+.dark .skill-bar {
+  background-color: #f9f9f9;
+  border-radius: 10px;
 }
 
 .skill-per {
   height: 20px;
-  background: #23576f;
+  background: #555;
   border-radius: 8px;
   width: 0;
   transition: 1s linear;
@@ -416,7 +431,7 @@ li:last-child {
   content: attr(per);
   position: absolute;
   padding: 4px 6px;
-  background-color: #23576f;
+  background-color: #555;
   color: #fff;
   font-size: 11px;
   border-radius: 4px;
@@ -459,4 +474,23 @@ li:last-child {
   justify-content: center;
   height: 100%;
 }
+
+/* completed habit content */
+
+.completed-habits-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  text-align: left;
+}
+
+.checkdelete-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+
+
 

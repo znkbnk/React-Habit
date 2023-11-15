@@ -98,13 +98,13 @@ const HabitList = ({
     localStorage.setItem("completedHabits", JSON.stringify(completedHabits));
   };
 
-  const filteredHabits =
-    selectedCategory === "All"
-      ? habits
-      : habits.filter(
-          (habit) =>
-            habit.category && habit.category.trim() === selectedCategory.trim()
-        );
+ const filteredHabits = habits.filter((habit) => {
+   if (showUnfinished) {
+     return habit.goalDays > 0;
+   } else {
+     return habit.goalDays === 0;
+   }
+ });
 
   const handleToggleUnfinished = () => {
     setShowUnfinished(!showUnfinished);
@@ -163,19 +163,28 @@ const HabitList = ({
                       </span>
                       <br />
                       <span>
-                        {habit.selectedDateRange
-                          ? `Date Range: ${
-                              habit.selectedDateRange.start instanceof Date
+                        {habit.selectedDateRange ? (
+                          <>
+                            <div>
+                              Date Range Start:{" "}
+                              {habit.selectedDateRange.start instanceof Date
                                 ? habit.selectedDateRange.start.toDateString()
-                                : "Not specified"
-                            } - ${
-                              habit.selectedDateRange.end instanceof Date
+                                : "Not specified"}
+                            </div>
+                            <div>
+                              Date Range End:{" "}
+                              {habit.selectedDateRange.end instanceof Date
                                 ? habit.selectedDateRange.end.toDateString()
-                                : "Not specified"
-                            }`
-                          : habit.selectedDate instanceof Date
-                          ? `Selected Date: ${habit.selectedDate.toDateString()}`
-                          : "Selected Date: Not specified"}
+                                : "Not specified"}
+                            </div>
+                          </>
+                        ) : habit.selectedDate instanceof Date ? (
+                          <div>
+                            Selected Date: {habit.selectedDate.toDateString()}
+                          </div>
+                        ) : (
+                          <div>Selected Date: Not specified</div>
+                        )}
                       </span>
                       {habit.goalDays > 0 ? (
                         <p>
@@ -191,18 +200,24 @@ const HabitList = ({
                         <></>
                       )}
                       {habit.goalDays === 0 ? (
-                        <p>
-                          Goal achieved in: {habit.initialGoalDays}{" "}
-                          {habit.initialGoalDays === 1 ? "day" : "days"}
-                          <button
-                            onClick={() => handleDeleteHabit(habit)}
-                            disabled={habit.goalDays > 0}
-                          >
-                            DELETE
-                          </button>
-                        </p>
+                        <div>
+                          <p>
+                            Goal achieved in: {habit.initialGoalDays}{" "}
+                            {habit.initialGoalDays === 1 ? "day" : "days"}
+                          </p>
+                          <div>
+                            <div className='checkdelete-container'>
+                              <button
+                                onClick={() => handleDeleteHabit(habit)}
+                                disabled={habit.goalDays > 0}
+                              >
+                                DELETE
+                              </button>
+                            </div>
+                          </div>
+                        </div>
                       ) : (
-                        <div className='habitlist-button'>
+                        <div className='checkdelete-container'>
                           <button
                             onClick={() => handleCheckClick(habit)}
                             disabled={habit.goalDays <= 0}
