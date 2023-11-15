@@ -422,7 +422,6 @@ function App() {
         setSelectedDate={setSelectedDate}
       />
       <ToastContainer />
-
       {showCompletedHabits && (
         <CompletedHabits
           completedHabits={completedHabits}
