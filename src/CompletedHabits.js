@@ -20,12 +20,15 @@ const CompletedHabits = ({ completedHabits, onClose }) => {
     setHabits(updatedHabits);
   };
 
+  // Reverse the order of habits to show the most recent completed habits at the top
+  const reversedHabits = [...habits].reverse();
+
   return (
     <div className='completed-habits-modal'>
       <div className='completed-habits-content'>
         <h2>History</h2>
         <ul>
-          {habits.map((habit, index) => (
+          {reversedHabits.map((habit, index) => (
             <li key={index} className='habit-item'>
               <div className='completed-result-column'>
                 <span>

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import SkillBar from "./SkillBar";
+import emailjs from "emailjs-com";
 
 const HabitList = ({
   habits,
@@ -46,6 +47,28 @@ const HabitList = ({
     }
   }, [unfinishedHabits]);
 
+  const sendHabitCompletionEmail = (habit) => {
+    const templateParams = {
+      to_email: "your_email@example.com", // Replace with your email
+      subject: "Habit Completed",
+      message: `Congratulations! You have completed the habit: ${habit.name}`,
+    };
+
+    emailjs
+      .send(
+        "YOUR_EMAILJS_SERVICE_ID",
+        "YOUR_EMAILJS_TEMPLATE_ID",
+        templateParams,
+        "YOUR_EMAILJS_USER_ID"
+      )
+      .then((response) => {
+        console.log("Email sent:", response);
+      })
+      .catch((error) => {
+        console.error("Email error:", error);
+      });
+  };
+
   const handleCheckClick = (habit) => {
     const currentDate = new Date();
     const updatedGoalDays = habit.goalDays - 1;
@@ -82,6 +105,9 @@ const HabitList = ({
             updatedHabit.name
           }" on ${currentDate.toLocaleString()}`
         );
+
+        // Send email when habit is completed
+        sendHabitCompletionEmail(updatedHabit);
       } else {
         const daysLeftMessage =
           updatedGoalDays === 1 ? "1 day left" : `${updatedGoalDays} days left`;
@@ -125,7 +151,7 @@ const HabitList = ({
       saveCompletedHabitsToStorage(completedHabits);
 
       toast.error(
-        `Finished habit "${habit.name}" has been moved to Completed Habits.`
+        `Finished habit "${habit.name}" has been deleted.`
       );
     } else {
       toast.error(`Unfinished habit "${habit.name}" cannot be deleted.`);
