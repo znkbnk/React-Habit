@@ -198,7 +198,7 @@ function App() {
 
   const sendReminderEmail = (habitName) => {
     const templateParams = {
-      to_email: "zenikibeniki@gmail.com",
+      to_email: "your_email@example.com", // Replace with your email
       subject: "Reminder: Complete Your Habit",
       message: `Don't forget to complete your habit: ${habitName}`,
     };
