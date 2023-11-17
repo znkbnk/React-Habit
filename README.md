@@ -1,70 +1,59 @@
-# Getting Started with Create React App
+Step 1: Install Email.js
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+- If you haven't installed emailjs-com,
+you can install it using:
+npm install emailjs-com
 
-## Available Scripts
+Step 2: Set Up Email.js Account
 
-In the project directory, you can run:
+- Go to Email.js and sign up for an account.
+- After signing in, create a new service
+and template.
 
-### `npm start`
+Step 3: Get Email.js IDs
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- In your Email.js dashboard, go to the
+"Email Services" tab, click on the
+service you created.
+- Copy the "Service ID" from the top of
+the service settings page.
+- Go to the "Email Templates" tab, click
+on the template you created.
+- Copy the "Template ID" from the top
+of the template settings page.
+- Go to the "Account" tab, from the top
+of the page find API keys.
+Copy the "Public Key" and use it as User ID.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+Step 4: Update HabitList.js
 
-### `npm test`
+- Import emailjs-com at the beginning of
+the file.
+- Inside the HabitList component, create the
+sendHabitCompletionEmail function, similar to
+sendReminderEmail function from App.js.
+- Replace "your_email@example.com",
+"YOUR_EMAILJS_SERVICE_ID",
+"YOUR_EMAILJS_TEMPLATE_ID", and
+"YOUR_EMAILJS_USER_ID" with your actual values.
+- Find the handleCheckClick function in HabitList.js.
+Inside it, after the if (updatedGoalDays === 0)
+block, call the sendHabitCompletionEmail function.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Bonus: To display the most recent completed
+habits at the top of the History tab.
 
-### `npm run build`
+Step 1: Duplicate the habits Array
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+- Create a new array (reversedHabits) by spreading 
+the elements of the habits array and then
+reverse the order.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Step 2: Update the Map Function to Use reversedHabits
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+- Change the mapping function to use the reversedHabits
+array instead of the original habits array.
 
-### `npm run eject`
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
