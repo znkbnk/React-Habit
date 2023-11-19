@@ -124,13 +124,13 @@ const HabitList = ({
     localStorage.setItem("completedHabits", JSON.stringify(completedHabits));
   };
 
- const filteredHabits = habits.filter((habit) => {
-   if (showUnfinished) {
-     return habit.goalDays > 0;
-   } else {
-     return habit.goalDays === 0;
-   }
- });
+  const filteredHabits = habits.filter((habit) => {
+    if (showUnfinished) {
+      return habit.goalDays > 0;
+    } else {
+      return habit.goalDays === 0;
+    }
+  });
 
   const handleToggleUnfinished = () => {
     setShowUnfinished(!showUnfinished);
@@ -150,9 +150,7 @@ const HabitList = ({
 
       saveCompletedHabitsToStorage(completedHabits);
 
-      toast.error(
-        `Finished habit "${habit.name}" has been deleted.`
-      );
+      toast.error(`Finished habit "${habit.name}" has been deleted.`);
     } else {
       toast.error(`Unfinished habit "${habit.name}" cannot be deleted.`);
     }

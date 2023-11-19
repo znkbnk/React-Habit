@@ -39,7 +39,6 @@ function App() {
   const [selectedFrequency, setSelectedFrequency] = useState("none");
   const chartRef = useRef();
 
-
   useEffect(() => {
     const storedCategories = localStorage.getItem("categories");
     if (storedCategories) {
@@ -273,16 +272,16 @@ function App() {
     }
   };
 
-    const closeCompletedHabits = () => {
-      setShowCompletedHabits(false);
-      setShowChart(false); // Hide the chart when closing CompletedHabits
-    };
+  const closeCompletedHabits = () => {
+    setShowCompletedHabits(false);
+    setShowChart(false); // Hide the chart when closing CompletedHabits
+  };
 
-    const handleContactSubmit = (formData) => {
-      // Handle the form data, e.g., send it to a server or perform any necessary actions.
-      console.log("Contact form data submitted:", formData);
-      // You can add your logic to send this data to a server or store it as needed.
-    };
+  const handleContactSubmit = (formData) => {
+    // Handle the form data, e.g., send it to a server or perform any necessary actions.
+    console.log("Contact form data submitted:", formData);
+    // You can add your logic to send this data to a server or store it as needed.
+  };
 
   return (
     <div className={`app-container ${theme}`}>

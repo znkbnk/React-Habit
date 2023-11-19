@@ -12,7 +12,6 @@ const CategoryDropdown = ({
   const [newCategory, setNewCategory] = useState("");
   const [dropdownWidth, setDropdownWidth] = useState(150);
   const dropdownRef = useRef(null);
-  
 
   useEffect(() => {
     function handleClickOutside(event) {
