@@ -1,6 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 
 const CategoryDropdown = ({
+  handleShowFinishedClick,
+  handleShowUnfinishedClick,
+  
   showCategoriesDropdown,
   onCategorySelect,
   onDeleteCategory,
@@ -70,6 +73,9 @@ const CategoryDropdown = ({
             </button>
           </div>
         ))}
+        <button onClick={handleShowFinishedClick}>Finished Habits</button>
+        <button onClick={handleShowUnfinishedClick}>Unfinished Habits</button>
+        <span>Users Categoris:</span>
         {categories.map((category, index) => (
           <div key={index} className='category-item-rest'>
             <button
@@ -144,4 +150,3 @@ export default CategoryDropdown;
 //     {category}
 //   </button>
 // ))}
-

@@ -7,12 +7,14 @@ import emailjs from "emailjs-com";
 const HabitList = ({
   habits,
   setHabits,
-  selectedCategory,
+  showUnfinished,
+  handleShowFinishedClick,
+  handleShowUnfinishedClick,
   setCompletedHabits,
   completedHabits,
+  setShowUnfinished,
 }) => {
   const [unfinishedHabits, setUnfinishedHabits] = useState([]);
-  const [showUnfinished, setShowUnfinished] = useState(false);
 
   const calculatePercentage = (habit) => {
     if (habit.goalDays === 0) return 100;
@@ -45,7 +47,7 @@ const HabitList = ({
     if (unfinishedHabits.length > 0) {
       setShowUnfinished(true);
     }
-  }, [unfinishedHabits]);
+  }, [setShowUnfinished, unfinishedHabits]);
 
   const sendHabitCompletionEmail = (habit) => {
     const templateParams = {
@@ -132,10 +134,7 @@ const HabitList = ({
     }
   });
 
-  const handleToggleUnfinished = () => {
-    setShowUnfinished(!showUnfinished);
-  };
-
+ 
   const handleDeleteHabit = (habit) => {
     if (habit.goalDays === 0) {
       const updatedHabits = habits.filter((h) => h.key !== habit.key);
@@ -158,8 +157,9 @@ const HabitList = ({
 
   return (
     <div>
-      <button onClick={handleToggleUnfinished}>
-        {showUnfinished ? "Show Finished Habits" : "Show Unfinished Habits"}
+      <button onClick={handleShowFinishedClick}>Show Finished Habits</button>
+      <button onClick={handleShowUnfinishedClick}>
+        Show Unfinished Habits
       </button>
       <ul className='habitlist-buttons'>
         {filteredHabits

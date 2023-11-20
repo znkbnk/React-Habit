@@ -37,6 +37,9 @@ function App() {
   const [completedHabitsData, setCompletedHabitsData] = useState({});
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedFrequency, setSelectedFrequency] = useState("none");
+
+  const [showUnfinished, setShowUnfinished] = useState(false);
+
   const chartRef = useRef();
 
   useEffect(() => {
@@ -283,6 +286,14 @@ function App() {
     // You can add your logic to send this data to a server or store it as needed.
   };
 
+  const handleShowFinishedClick = () => {
+    setShowUnfinished(false);
+  };
+
+  const handleShowUnfinishedClick = () => {
+    setShowUnfinished(true);
+  };
+
   return (
     <div className={`app-container ${theme}`}>
       <div
@@ -382,6 +393,8 @@ function App() {
           onCreateCategory={createCategory}
           categories={categories}
           setShowCategoriesDropdown={setShowCategoriesDropdown}
+          handleShowFinishedClick={handleShowFinishedClick}
+          handleShowUnfinishedClick={handleShowUnfinishedClick}
         />
       )}
       {showChart && (
@@ -419,6 +432,10 @@ function App() {
         setHabits={setHabits}
         completedHabits={completedHabits}
         setSelectedDate={setSelectedDate}
+        showUnfinished={showUnfinished}
+        handleShowFinishedClick={handleShowFinishedClick}
+        handleShowUnfinishedClick={handleShowUnfinishedClick}
+        setShowUnfinished={setShowUnfinished}
       />
       <ToastContainer />
       {showCompletedHabits && (
