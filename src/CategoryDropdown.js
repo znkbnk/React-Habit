@@ -1,9 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 
 const CategoryDropdown = ({
-  handleShowFinishedClick,
   handleShowUnfinishedClick,
-  
   showCategoriesDropdown,
   onCategorySelect,
   onDeleteCategory,
@@ -43,7 +41,7 @@ const CategoryDropdown = ({
     }
   };
 
-  const defaultCategories = ["All"];
+ 
 
   useEffect(() => {
     const maxWidth = categories.reduce((max, category) => {
@@ -61,32 +59,20 @@ const CategoryDropdown = ({
         className='dropdown-content'
         style={{ width: `${dropdownWidth}px` }}
       >
-        {defaultCategories.map((category, index) => (
-          <div key={index} className='category-item-all'>
-            <button
-              onClick={() => onCategorySelect(category)}
-              className={`dropdown-link ${
-                category === selectedCategory ? "selected" : ""
-              }`}
-            >
-              {category}
-            </button>
-          </div>
-        ))}
-        <button onClick={handleShowFinishedClick}>Finished Habits</button>
+        
         <button onClick={handleShowUnfinishedClick}>Unfinished Habits</button>
-        <span>Users Categoris:</span>
+        <span>My Categories:</span>
         {categories.map((category, index) => (
           <div key={index} className='category-item-rest'>
-            <button
+            <span
               onClick={() => onCategorySelect(category)}
               className={`dropdown-link ${
                 category === selectedCategory ? "selected" : ""
               }`}
             >
               {category}
-            </button>
-            {category !== "All" && (
+            </span>
+            {category  && (
               <button
                 onClick={() => onDeleteCategory(category)}
                 className='delete-button'

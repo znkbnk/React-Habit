@@ -8,7 +8,6 @@ const HabitList = ({
   habits,
   setHabits,
   showUnfinished,
-  handleShowFinishedClick,
   handleShowUnfinishedClick,
   setCompletedHabits,
   completedHabits,
@@ -23,29 +22,35 @@ const HabitList = ({
   };
 
   useEffect(() => {
-    const savedHabits = JSON.parse(localStorage.getItem("habits")) || [];
-    // Convert date strings back to Date objects
-    const parsedHabits = savedHabits.map((habit) => ({
-      ...habit,
-      date: new Date(habit.date),
-      selectedDate: habit.selectedDate ? new Date(habit.selectedDate) : null,
-      selectedDateRange: habit.selectedDateRange
-        ? {
-            start: new Date(habit.selectedDateRange.start),
-            end: new Date(habit.selectedDateRange.end),
-          }
-        : null,
-    }));
-    setHabits(parsedHabits);
+  const savedHabits = JSON.parse(localStorage.getItem("habits")) || [];
+  // Convert date strings back to Date objects
+  const parsedHabits = savedHabits.map((habit) => ({
+    ...habit,
+    date: new Date(habit.date),
+    selectedDate: habit.selectedDate ? new Date(habit.selectedDate) : null,
+    selectedDateRange: habit.selectedDateRange
+      ? {
+          start: new Date(habit.selectedDateRange.start),
+          end: new Date(habit.selectedDateRange.end),
+        }
+      : null,
+  }));
 
-    const savedUnfinishedHabits =
-      JSON.parse(localStorage.getItem("unfinishedHabits")) || [];
-    setUnfinishedHabits(savedUnfinishedHabits);
-  }, [setHabits]);
+  // Sort the habits array by creation date in descending order
+  const sortedHabits = parsedHabits.sort(
+    (a, b) => b.date.getTime() - a.date.getTime()
+  );
+
+  setHabits(sortedHabits);
+
+  const savedUnfinishedHabits =
+    JSON.parse(localStorage.getItem("unfinishedHabits")) || [];
+  setUnfinishedHabits(savedUnfinishedHabits);
+}, [setHabits]);
 
   useEffect(() => {
     if (unfinishedHabits.length > 0) {
-      setShowUnfinished(true);
+      setShowUnfinished(false);
     }
   }, [setShowUnfinished, unfinishedHabits]);
 
@@ -134,7 +139,6 @@ const HabitList = ({
     }
   });
 
- 
   const handleDeleteHabit = (habit) => {
     if (habit.goalDays === 0) {
       const updatedHabits = habits.filter((h) => h.key !== habit.key);
@@ -157,7 +161,6 @@ const HabitList = ({
 
   return (
     <div>
-      <button onClick={handleShowFinishedClick}>Show Finished Habits</button>
       <button onClick={handleShowUnfinishedClick}>
         Show Unfinished Habits
       </button>

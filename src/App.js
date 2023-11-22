@@ -10,6 +10,7 @@ import SkewedNavbar from "./SkewedNavbar";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ContactUsForm from "./ContactUsForm";
+import UnfinishedHabitsReminder from "./UnfinishedHabitsReminder";
 
 const setThemePreference = (theme) => {
   localStorage.setItem("theme", theme);
@@ -38,9 +39,20 @@ function App() {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedFrequency, setSelectedFrequency] = useState("none");
 
+  const [isUnfinishedReminderVisible, setIsUnfinishedReminderVisible] =
+    useState(false);
+
   const [showUnfinished, setShowUnfinished] = useState(false);
 
   const chartRef = useRef();
+
+  useEffect(() => {
+    const unfinishedHabits =
+      JSON.parse(localStorage.getItem("unfinishedHabits")) || [];
+    if (unfinishedHabits.length > 0) {
+      setIsUnfinishedReminderVisible(true);
+    }
+  }, []);
 
   useEffect(() => {
     const storedCategories = localStorage.getItem("categories");
@@ -161,10 +173,9 @@ function App() {
     habit.key = timestamp;
     habit.initialGoalDays = habit.goalDays;
     habit.date = new Date();
-
     habit.goalDays = habit.initialGoalDays;
 
-    setHabits((prevHabits) => [...prevHabits, habit]);
+    setHabits((prevHabits) => [habit, ...prevHabits]);
 
     setCategories((prevCategories) => {
       const uniqueCategories = Array.from(
@@ -286,11 +297,8 @@ function App() {
     // You can add your logic to send this data to a server or store it as needed.
   };
 
-  const handleShowFinishedClick = () => {
-    setShowUnfinished(false);
-  };
-
   const handleShowUnfinishedClick = () => {
+    setShowCategoriesDropdown(false);
     setShowUnfinished(true);
   };
 
@@ -393,7 +401,6 @@ function App() {
           onCreateCategory={createCategory}
           categories={categories}
           setShowCategoriesDropdown={setShowCategoriesDropdown}
-          handleShowFinishedClick={handleShowFinishedClick}
           handleShowUnfinishedClick={handleShowUnfinishedClick}
         />
       )}
@@ -433,7 +440,6 @@ function App() {
         completedHabits={completedHabits}
         setSelectedDate={setSelectedDate}
         showUnfinished={showUnfinished}
-        handleShowFinishedClick={handleShowFinishedClick}
         handleShowUnfinishedClick={handleShowUnfinishedClick}
         setShowUnfinished={setShowUnfinished}
       />
@@ -444,6 +450,11 @@ function App() {
           onClose={closeCompletedHabits}
         />
       )}
+      
+      <UnfinishedHabitsReminder
+        isOpen={isUnfinishedReminderVisible}
+        onClose={() => setIsUnfinishedReminderVisible(false)}
+      />
     </div>
   );
 }

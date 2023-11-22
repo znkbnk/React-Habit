@@ -1,58 +1,46 @@
-Step 1: Install Email.js
+Bug 1: Show unfinished habits only if You press Unfinished Habits button.
 
-- If you haven't installed emailjs-com,
-you can install it using:
-npm install emailjs-com
+In your HabitList component inside the useEffect block, change the showUnfinished state to false.
 
-Step 2: Set Up Email.js Account
+Bug 2: Hide the dropdown when the "Unfinished Habits" button is clicked.
 
-- Go to Email.js and sign up for an account.
-- After signing in, create a new service
-and template.
+In your App.js add setShowCategoriesDropdown(false) line to the handleShowUnfinishedClick function.
 
-Step 3: Get Email.js IDs
+Bug 3: Display newly created habits at the top of the list.
 
-- In your Email.js dashboard, go to the
-"Email Services" tab, click on the
-service you created.
-- Copy the "Service ID" from the top of
-the service settings page.
-- Go to the "Email Templates" tab, click
-on the template you created.
-- Copy the "Template ID" from the top
-of the template settings page.
-- Go to the "Account" tab, from the top
-of the page find API keys.
-Copy the "Public Key" and use it as User ID.
+In your parent component App, modify your addHabit function. Use [habit, ...prevHabits] instead of [...prevHabits, habit].
 
-Step 4: Update HabitList.js
+Bug 4: In the history section, where old habits are done,  get rid of Finished Habits button.
 
-- Import emailjs-com at the beginning of
-the file.
-- Inside the HabitList component, create the
-sendHabitCompletionEmail function, similar to
-sendReminderEmail function from App.js.
-- Replace "your_email@example.com",
-"YOUR_EMAILJS_SERVICE_ID",
-"YOUR_EMAILJS_TEMPLATE_ID", and
-"YOUR_EMAILJS_USER_ID" with your actual values.
-- Find the handleCheckClick function in HabitList.js.
-Inside it, after the if (updatedGoalDays === 0)
-block, call the sendHabitCompletionEmail function.
+In App.js file delete handleShowFinishedClick funtion, then delete prop: handleShowFinishedClick={handleShowFinishedClick} from CategoryDropdown and HabitList components.
+Delete handleShowFinishedClick prop from  CategoryDropdown.js and HabitList.js.
+In your HabitList.js delete Show Finished Habits button from return statement.
 
-Bonus: To display the most recent completed
-habits at the top of the History tab.
+Bug 5: There is no need to have button All in CategoryDropdown.js
 
-Step 1: Duplicate the habits Array
+Delete const defaultCategories = ["All"] statement.
+Delete funtionality for defaultcategories from return statement.
 
-- Create a new array (reversedHabits) by spreading 
-the elements of the habits array and then
-reverse the order.
+Bug 6: Newly created categories by user in CategoryDropdown should not to be a buttons.
 
-Step 2: Update the Map Function to Use reversedHabits
+Modify the tags in the return statement from <button> to <span> for the part that handles the category names.
 
-- Change the mapping function to use the reversedHabits
-array instead of the original habits array.
+New Feature: Create a popup window that reminds you that you have some unfinished habits.
+
+Step 1: Install the react-modal library
+
+Step 2: Create a new simple Modal file named UnfinishedHabitsReminder.js which contains functions to handle opening and closing the modal.
+
+Step 3: In your App.js Define State Variable
+
+Step 4: Use the useEffect Hook:
+
+Retrieve unfinished habits from local storage or set an empty array if none exists.
+Check if there are any unfinished habits.
+If there are unfinished habits, set the reminder visibility to true.
+Integrate the UnfinishedHabitsReminder component into App.js return statement.
+
+Step 5: Style UnfinishedHabitsReminder.js
 
 
 
