@@ -174,36 +174,35 @@ const HabitForm = ({
   };
 
   return (
-    <div className='habit-form'>
+    <div className='habit-form wrapper'>
       <form onSubmit={handleFormSubmit}>
-        <label htmlFor='email'>Habit Name:</label>
-        <div>
+        <div className="border">
           <input
             type='text'
             value={habit.name}
             onChange={handleHabitChange}
             placeholder='Enter a new habit'
             required
+            style={{ transform: "rotate(1deg)" }}
           />
         </div>
         <div>
-          <label htmlFor='email'>Reminder time:</label>
           <input
             type='text'
             value={habit.reminderTime}
             onChange={handleReminderChange}
-            placeholder='(e.g., 12:00)'
+            placeholder='Enter Remainder Time (e.g., 12:00)'
+            style={{ transform: "rotate(-1deg)" }}
           />
         </div>
         <div>
-          <label htmlFor='email'>Enter goal days:</label>
-
           <input
             type='number'
             value={habit.goalDays}
             onChange={handleGoalDaysChange}
             placeholder='Enter goal days'
             required
+            style={{ transform: "rotate(1deg)" }}
           />
         </div>
         {goalDaysError && <p style={{ color: "red" }}>{goalDaysError}</p>}
@@ -213,9 +212,10 @@ const HabitForm = ({
               value={habit.category}
               onChange={handleCategoryChange}
               required
+              style={{ transform: "rotate(-1deg)" }}
             >
               <option value='' disabled>
-                Please choose category
+                Choose Category
               </option>
               {uniqueCategories.map((category) => (
                 <option key={category} value={category}>
@@ -225,7 +225,11 @@ const HabitForm = ({
             </select>
           </div>
 
-          <select onChange={handleFrequencyChange} value={selectedFrequency}>
+          <select
+            onChange={handleFrequencyChange}
+            value={selectedFrequency}
+            style={{ transform: "rotate(1deg)" }}
+          >
             <option value='none'>Select Frequency</option>
             <option value='daily'>Daily</option>
             <option value='weekly'>Weekly</option>
@@ -236,7 +240,7 @@ const HabitForm = ({
             <textarea
               value={habit.notes}
               onChange={handleNotesChange}
-              placeholder='Enter notes (optional)'
+              placeholder='Enter Notes (optional)'
             />
           </div>
           {selectedFrequency !== "none" && (

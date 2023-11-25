@@ -5,6 +5,7 @@ const ContactUsForm = ({
   onClose,
   onContactSubmit,
   setIsContactFormVisible,
+  setShowHabitForm,
 }) => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -38,30 +39,34 @@ const ContactUsForm = ({
       message: `Name: ${formData.name}\nEmail: ${formData.email}\nMessage: ${formData.text}`,
     };
 
-   emailjs
-     .send(
-       "service_1n4gsgx",
-       "template_mgjx1fd",
-       templateParams,
-       "u4-0CXt6mlWQViI6d"
-     )
-     .then((response) => {
-       console.log("Email sent:", response);
-       // Handle success, e.g., show a success message to the user
-     })
-     .catch((error) => {
-       console.error("Email error:", error);
-       // Handle error, e.g., show an error message to the user
-     });
+    emailjs
+      .send(
+        "service_1n4gsgx",
+        "template_mgjx1fd",
+        templateParams,
+        "u4-0CXt6mlWQViI6d"
+      )
+      .then((response) => {
+        console.log("Email sent:", response);
+        // Handle success, e.g., show a success message to the user
+      })
+      .catch((error) => {
+        console.error("Email error:", error);
+        // Handle error, e.g., show an error message to the user
+      });
   };
 
   const handleCloseClick = () => {
     setIsContactFormVisible(false);
+     setShowHabitForm(true);
+     
     onClose();
   };
 
+  
+
   return (
-    <div>
+    <div className='habit-form'>
       <div className='contact-us-form'>
         <h2>Contact Us</h2>
         <form onSubmit={handleContactSubmit}>
@@ -97,12 +102,7 @@ const ContactUsForm = ({
                 value={text}
                 onChange={(e) => setText(e.target.value)}
                 required
-                style={{
-                  width: "200px",
-                  height: "100px",
-                  maxWidth: "225px",
-                  maxHeight: "200px",
-                }}
+                placeholder='Enter the message'
               />
             </div>
           </div>

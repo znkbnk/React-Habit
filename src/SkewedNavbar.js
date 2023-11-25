@@ -4,30 +4,52 @@ import "./Sidebar.css";
 import "animate.css";
 
 export default function SkewedNavbar(props) {
-  const { showChart, setShowChart, setIsContactFormVisible } = props;
+  const {
+    setShowChart,
+    setIsContactFormVisible,
+    setShowHabitForm,
+    setIsRegistrationVisible,
+    setCompletedHabitsData,
+    setShowCompletedHabits,
+    setShowUnfinished,
+  } = props;
 
   const [showCategoriesDropdown, setShowCategoriesDropdown] = useState(false);
   const [theme, setTheme] = useState("light");
   const [isBlackBackground, setIsBlackBackground] = useState(false);
-  const [isRegistrationVisible, setIsRegistrationVisible] = useState(false);
 
   const handleBackgroundClick = () => {
     setIsBlackBackground((prev) => !prev);
   };
 
   const handleRegisterClick = () => {
-    setIsRegistrationVisible(!isRegistrationVisible);
-    props.onRegisterClick();
+    setIsRegistrationVisible(true);
+    setIsContactFormVisible(false);
+    setShowHabitForm(false);
+    setShowChart(false);
+    setShowCompletedHabits(false);
+    setShowUnfinished(false);
   };
 
   const handleCompletedClick = () => {
-    setShowChart(!showChart); 
-    props.onCompletedClick();
+    setShowCompletedHabits(true);
+    setShowChart(true);
+    setShowUnfinished(false);
+    setIsRegistrationVisible(false);
+    setIsContactFormVisible(false);
+    setShowHabitForm(false);
+    
+
   };
 
   const handleCategoriesClick = () => {
     setShowCategoriesDropdown(!showCategoriesDropdown);
     props.onCategoriesClick();
+    setIsContactFormVisible(false);
+    setShowHabitForm(false);
+    setIsRegistrationVisible(false);
+    setShowChart(false);
+    setShowCompletedHabits(false);
   };
 
   const handleThemeClick = () => {
@@ -36,14 +58,19 @@ export default function SkewedNavbar(props) {
   };
   const handleContactUsClick = () => {
     setIsContactFormVisible(true);
+    setShowHabitForm(false);
+    setIsRegistrationVisible(false);
+    setShowChart(false);
+    setShowCompletedHabits(false);
+    setShowUnfinished(false);
   };
 
   return (
     <div>
-      <ul className='navbar'>
+      <ul className='navbar habit-form'>
         <li>
           <button
-            className='nav-dark skewed-button'
+            className='nav-dark skewed-button habit-form'
             onClick={handleCompletedClick}
           >
             <span>
@@ -97,7 +124,7 @@ export default function SkewedNavbar(props) {
         </li>
         <li>
           <button
-            className='nav-dark skewed-button'
+            className='nav-dark skewed-button habit-form'
             onClick={handleCategoriesClick}
           >
             <span>
@@ -161,7 +188,7 @@ export default function SkewedNavbar(props) {
         </li>
         <li>
           <button
-            className='nav-dark skewed-button'
+            className='nav-dark skewed-button habit-form'
             onClick={handleRegisterClick}
           >
             <span>
@@ -225,7 +252,71 @@ export default function SkewedNavbar(props) {
         </li>
         <li>
           <button
-            className={`theme-toggle skewed-button ${
+            className='nav-dark skewed-button habit-form'
+            onClick={handleContactUsClick}
+          >
+            <span>
+              <svg
+                xmlns='http://www.w3.org/2000/svg'
+                width={192}
+                height={192}
+                fill='currentColor'
+                viewBox='0 0 256 256'
+              >
+                <rect width={256} height={256} fill='none' />
+                <rect
+                  x={24}
+                  y={56}
+                  width={208}
+                  height={144}
+                  rx={8}
+                  strokeWidth={16}
+                  stroke='currentColor'
+                  strokeLinecap='round'
+                  strokeLinejoin='round'
+                  fill='none'
+                />
+                <line
+                  x1='167.99414'
+                  y1={168}
+                  x2='199.99414'
+                  y2={168}
+                  fill='none'
+                  stroke='currentColor'
+                  strokeLinecap='round'
+                  strokeLinejoin='round'
+                  strokeWidth={16}
+                />
+                <line
+                  x1='119.99414'
+                  y1={168}
+                  x2='135.99414'
+                  y2={168}
+                  fill='none'
+                  stroke='currentColor'
+                  strokeLinecap='round'
+                  strokeLinejoin='round'
+                  strokeWidth={16}
+                />
+                <line
+                  x1='23.99414'
+                  y1='96.85228'
+                  x2='231.99412'
+                  y2='96.85228'
+                  fill='none'
+                  stroke='currentColor'
+                  strokeLinecap='round'
+                  strokeLinejoin='round'
+                  strokeWidth={16}
+                />
+              </svg>
+              Contact Us
+            </span>
+          </button>
+        </li>
+        <li>
+          <button
+            className={`theme-toggle skewed-button habit-form ${
               theme === "dark" ? "" : "white-background"
             }`}
             onClick={(e) => {
@@ -283,14 +374,6 @@ export default function SkewedNavbar(props) {
             </span>
           </button>
         </li>
-        <button
-          className='contaus-icon animate__animated animate__heartBeat'
-          onClick={handleContactUsClick}
-        >
-          <span>
-            <i className='fas fa-envelope'></i> {/* Contact Us icon */}
-          </span>
-        </button>
       </ul>
     </div>
   );

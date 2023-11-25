@@ -9,6 +9,8 @@ const CategoryDropdown = ({
   onCreateCategory,
   categories,
   setShowCategoriesDropdown,
+  showHabitForm,
+  setShowHabitForm,
 }) => {
   const [newCategory, setNewCategory] = useState("");
   const [dropdownWidth, setDropdownWidth] = useState(150);
@@ -17,7 +19,12 @@ const CategoryDropdown = ({
   useEffect(() => {
     function handleClickOutside(event) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        showCategoriesDropdown && setShowCategoriesDropdown(false);
+        if (showCategoriesDropdown) {
+          setShowCategoriesDropdown(false);
+        }
+        if (!showHabitForm) {
+          setShowHabitForm(true);
+        }
       }
     }
 
@@ -26,7 +33,12 @@ const CategoryDropdown = ({
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [setShowCategoriesDropdown, showCategoriesDropdown]);
+  }, [
+    setShowCategoriesDropdown,
+    showCategoriesDropdown,
+    setShowHabitForm,
+    showHabitForm,
+  ]);
 
   const handleNewCategoryChange = (event) => {
     setNewCategory(event.target.value);
@@ -40,8 +52,6 @@ const CategoryDropdown = ({
       setNewCategory("");
     }
   };
-
- 
 
   useEffect(() => {
     const maxWidth = categories.reduce((max, category) => {
@@ -59,27 +69,28 @@ const CategoryDropdown = ({
         className='dropdown-content'
         style={{ width: `${dropdownWidth}px` }}
       >
-        
         <button onClick={handleShowUnfinishedClick}>Unfinished Habits</button>
-        <span>My Categories:</span>
+        <span className='my-categories'>My Categories:</span>
         {categories.map((category, index) => (
           <div key={index} className='category-item-rest'>
-            <span
-              onClick={() => onCategorySelect(category)}
-              className={`dropdown-link ${
-                category === selectedCategory ? "selected" : ""
-              }`}
-            >
-              {category}
-            </span>
-            {category  && (
-              <button
-                onClick={() => onDeleteCategory(category)}
-                className='delete-button'
+            <div className='category-item-content'>
+              <span
+                onClick={() => onCategorySelect(category)}
+                className={`dropdown-link ${
+                  category === selectedCategory ? "selected" : ""
+                }`}
               >
-                x
-              </button>
-            )}
+                {category}
+              </span>
+              {category && (
+                <button
+                  className='dropdown-delete-button'
+                  onClick={() => onDeleteCategory(category)}
+                >
+                  x
+                </button>
+              )}
+            </div>
           </div>
         ))}
         {/* to show newly created category in dropdown */}

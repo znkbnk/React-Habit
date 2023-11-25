@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-const CompletedHabits = ({ completedHabits, onClose }) => {
+const CompletedHabits = ({ completedHabits, onClose, setShowChart,setShowHabitForm }) => {
   const [habits, setHabits] = useState(completedHabits);
 
   useEffect(() => {
@@ -9,6 +9,10 @@ const CompletedHabits = ({ completedHabits, onClose }) => {
       setHabits(storedHabits);
     }
   }, []);
+
+  useEffect(() => {
+    setHabits(completedHabits);
+  }, [completedHabits]);
 
   useEffect(() => {
     localStorage.setItem("completedHabits", JSON.stringify(habits));
@@ -27,6 +31,17 @@ const CompletedHabits = ({ completedHabits, onClose }) => {
     <div className='completed-habits-modal'>
       <div className='completed-habits-content'>
         <h2>History</h2>
+        <button
+          onClick={() => {
+            onClose();
+            setShowChart(false);
+            setShowHabitForm(true);
+
+          }}
+        >
+          Close
+        </button>
+
         <ul>
           {reversedHabits.map((habit, index) => (
             <li key={index} className='habit-item'>
@@ -67,7 +82,15 @@ const CompletedHabits = ({ completedHabits, onClose }) => {
             </li>
           ))}
         </ul>
-        <button onClick={onClose}>Close</button>
+        <button
+          onClick={() => {
+            onClose();
+            setShowChart(false);
+            setShowHabitForm(true)
+          }}
+        >
+          Close
+        </button>
       </div>
     </div>
   );

@@ -9,13 +9,14 @@ const UnfinishedHabitsReminder = ({ isOpen, onClose }) => (
     style={{
       overlay: {
         backgroundColor: "rgba(0, 0, 0, 0.5)",
+        zIndex: "444",
       },
       content: {
         borderRadius: "10px",
         padding: "20px",
         border: "none",
         maxWidth: "300px",
-        maxHeight: '300px',
+        maxHeight: "300px",
         margin: "auto",
       },
     }}

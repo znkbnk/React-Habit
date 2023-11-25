@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-const RegistrationForm = ({ onClose }) => {
+const RegistrationForm = ({ onClose, setShowHabitForm }) => {
   const [formData, setFormData] = useState({
     username: "",
     email: "",
@@ -21,12 +21,13 @@ const RegistrationForm = ({ onClose }) => {
   };
 
   const handleCloseClick = () => {
-    setIsFormVisible(false); // Hide the form
+    setIsFormVisible(false);
+    setShowHabitForm(true); // Hide the form
     onClose(); // Call the onClose function if needed
   };
 
   return (
-    <div className='registration-modal'>
+    <div className='registration-modal habit-form'>
       <div className='registration-content'>
         <h2>Register</h2>
         <form onSubmit={handleSubmit}>

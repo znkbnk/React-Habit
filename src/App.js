@@ -28,7 +28,6 @@ function App() {
   const [isContactFormVisible, setIsContactFormVisible] = useState(false);
   const [habits, setHabits] = useState(initialHabits);
   const [categories, setCategories] = useState(initialCategories);
-  const [showDeletedHabits, setShowDeletedHabits] = useState(false);
   const [completedHabits, setCompletedHabits] = useState([]);
   const [showCompletedHabits, setShowCompletedHabits] = useState(false);
   const [showCategoriesDropdown, setShowCategoriesDropdown] = useState(false);
@@ -38,13 +37,15 @@ function App() {
   const [completedHabitsData, setCompletedHabitsData] = useState({});
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedFrequency, setSelectedFrequency] = useState("none");
-
+  const [showHabitForm, setShowHabitForm] = useState(true);
   const [isUnfinishedReminderVisible, setIsUnfinishedReminderVisible] =
     useState(false);
 
   const [showUnfinished, setShowUnfinished] = useState(false);
 
   const chartRef = useRef();
+
+ 
 
   useEffect(() => {
     const unfinishedHabits =
@@ -80,26 +81,23 @@ function App() {
 
   useEffect(() => {
     const data = {};
-    completedHabits
-      .filter(
-        (habit) =>
-          selectedCategory === "All" || habit.category === selectedCategory
-      )
-      .forEach((habit) => {
-        if (habit.category) {
-          if (!data[habit.category]) {
-            data[habit.category] = 1;
-          } else {
-            data[habit.category] += 1;
-          }
+    completedHabits.forEach((habit) => {
+      if (habit.category) {
+        if (!data[habit.category]) {
+          data[habit.category] = 1;
+        } else {
+          data[habit.category] += 1;
         }
-      });
+      }
+    });
     setCompletedHabitsData(data);
-  }, [completedHabits, selectedCategory, theme]);
+  }, [completedHabits, theme]);
 
   useEffect(() => {
     const showChart = (completedHabitsData) => {
+      
       if (showChart && chartRef.current) {
+        console.log("Completed Habits Data Updated:", completedHabitsData);
         const canvas = document.getElementById("habitsChart");
         const ctx = canvas.getContext("2d");
 
@@ -166,7 +164,7 @@ function App() {
     if (completedHabitsData) {
       showChart(completedHabitsData);
     }
-  }, [completedHabitsData, theme, showChart]);
+  }, [completedHabitsData, theme, showChart, chartRef]);
 
   const addHabit = (habit) => {
     const timestamp = new Date().getTime();
@@ -243,7 +241,6 @@ function App() {
 
   const handleCategorySelect = (category) => {
     setSelectedCategory(category);
-    toggleCategoriesDropdown(false);
   };
 
   const handleDeleteCategory = (categoryToDelete) => {
@@ -286,10 +283,7 @@ function App() {
     }
   };
 
-  const closeCompletedHabits = () => {
-    setShowCompletedHabits(false);
-    setShowChart(false); // Hide the chart when closing CompletedHabits
-  };
+ 
 
   const handleContactSubmit = (formData) => {
     // Handle the form data, e.g., send it to a server or perform any necessary actions.
@@ -300,6 +294,7 @@ function App() {
   const handleShowUnfinishedClick = () => {
     setShowCategoriesDropdown(false);
     setShowUnfinished(true);
+    setShowHabitForm(false);
   };
 
   return (
@@ -384,7 +379,6 @@ function App() {
         }}
       ></div>
       <SkewedNavbar
-        onDeleteClick={() => setShowDeletedHabits(!showDeletedHabits)}
         onCompletedClick={() => setShowCompletedHabits(!showCompletedHabits)}
         onCategoriesClick={toggleCategoriesDropdown}
         onThemeClick={toggleTheme}
@@ -392,6 +386,15 @@ function App() {
         showChart={showChart}
         setShowChart={setShowChart}
         setIsContactFormVisible={setIsContactFormVisible}
+        setShowHabitForm={setShowHabitForm}
+        isRegistrationVisible={isRegistrationVisible}
+        setIsRegistrationVisible={setIsRegistrationVisible}
+        setCompletedHabits={setCompletedHabits}
+        setCompletedHabitsData={setCompletedHabitsData}
+        setShowCompletedHabits={setShowCompletedHabits}
+        setShowUnfinished={setShowUnfinished}
+        completedHabitsData={completedHabitsData}
+        
       />
       {showCategoriesDropdown && (
         <CategoryDropdown
@@ -402,34 +405,43 @@ function App() {
           categories={categories}
           setShowCategoriesDropdown={setShowCategoriesDropdown}
           handleShowUnfinishedClick={handleShowUnfinishedClick}
+          setShowHabitForm={setShowHabitForm}
+          showHabitForm={showHabitForm}
         />
       )}
+      <h1 className='habit-form'>Habit Tracker App</h1>
+
       {showChart && (
-        <div className='chart-container'>
+        <div className='chart-container habit-form'>
           <canvas id='habitsChart' ref={chartRef}></canvas>
         </div>
       )}
 
       {isRegistrationVisible && (
-        <RegistrationForm onClose={toggleRegistration} />
+        <RegistrationForm
+          onClose={toggleRegistration}
+          setShowHabitForm={setShowHabitForm}
+        />
       )}
       {isContactFormVisible && (
         <ContactUsForm
           onClose={() => setIsContactFormVisible(false)}
           onContactSubmit={handleContactSubmit}
           setIsContactFormVisible={setIsContactFormVisible}
+          setShowHabitForm={setShowHabitForm}
         />
       )}
-      <h1>Habit Tracker</h1>
-      <HabitForm
-        addHabit={addHabit}
-        setSelectedCategory={setSelectedCategory}
-        categories={categories}
-        selectedDate={selectedDate}
-        setSelectedDate={setSelectedDate}
-        setSelectedFrequency={setSelectedFrequency}
-        selectedFrequency={selectedFrequency}
-      />
+      {showHabitForm && (
+        <HabitForm
+          addHabit={addHabit}
+          setSelectedCategory={setSelectedCategory}
+          categories={categories}
+          selectedDate={selectedDate}
+          setSelectedDate={setSelectedDate}
+          setSelectedFrequency={setSelectedFrequency}
+          selectedFrequency={selectedFrequency}
+        />
+      )}
       <HabitList
         habits={habits}
         updateHabit={updateHabit}
@@ -442,19 +454,24 @@ function App() {
         showUnfinished={showUnfinished}
         handleShowUnfinishedClick={handleShowUnfinishedClick}
         setShowUnfinished={setShowUnfinished}
+        setShowHabitForm={setShowHabitForm}
       />
       <ToastContainer />
       {showCompletedHabits && (
         <CompletedHabits
           completedHabits={completedHabits}
-          onClose={closeCompletedHabits}
+          onClose={() => setShowCompletedHabits(false)}
+          setShowChart={setShowChart}
+          setShowHabitForm={setShowHabitForm}
         />
       )}
-      
-      <UnfinishedHabitsReminder
-        isOpen={isUnfinishedReminderVisible}
-        onClose={() => setIsUnfinishedReminderVisible(false)}
-      />
+
+      {habits.some((habit) => habit.goalDays > 0) && (
+        <UnfinishedHabitsReminder
+          isOpen={isUnfinishedReminderVisible}
+          onClose={() => setIsUnfinishedReminderVisible(false)}
+        />
+      )}
     </div>
   );
 }

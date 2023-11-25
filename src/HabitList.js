@@ -8,10 +8,11 @@ const HabitList = ({
   habits,
   setHabits,
   showUnfinished,
-  handleShowUnfinishedClick,
   setCompletedHabits,
   completedHabits,
   setShowUnfinished,
+  setShowHabitForm,
+  
 }) => {
   const [unfinishedHabits, setUnfinishedHabits] = useState([]);
 
@@ -22,31 +23,31 @@ const HabitList = ({
   };
 
   useEffect(() => {
-  const savedHabits = JSON.parse(localStorage.getItem("habits")) || [];
-  // Convert date strings back to Date objects
-  const parsedHabits = savedHabits.map((habit) => ({
-    ...habit,
-    date: new Date(habit.date),
-    selectedDate: habit.selectedDate ? new Date(habit.selectedDate) : null,
-    selectedDateRange: habit.selectedDateRange
-      ? {
-          start: new Date(habit.selectedDateRange.start),
-          end: new Date(habit.selectedDateRange.end),
-        }
-      : null,
-  }));
+    const savedHabits = JSON.parse(localStorage.getItem("habits")) || [];
+    // Convert date strings back to Date objects
+    const parsedHabits = savedHabits.map((habit) => ({
+      ...habit,
+      date: new Date(habit.date),
+      selectedDate: habit.selectedDate ? new Date(habit.selectedDate) : null,
+      selectedDateRange: habit.selectedDateRange
+        ? {
+            start: new Date(habit.selectedDateRange.start),
+            end: new Date(habit.selectedDateRange.end),
+          }
+        : null,
+    }));
 
-  // Sort the habits array by creation date in descending order
-  const sortedHabits = parsedHabits.sort(
-    (a, b) => b.date.getTime() - a.date.getTime()
-  );
+    // Sort the habits array by creation date in descending order
+    const sortedHabits = parsedHabits.sort(
+      (a, b) => b.date.getTime() - a.date.getTime()
+    );
 
-  setHabits(sortedHabits);
+    setHabits(sortedHabits);
 
-  const savedUnfinishedHabits =
-    JSON.parse(localStorage.getItem("unfinishedHabits")) || [];
-  setUnfinishedHabits(savedUnfinishedHabits);
-}, [setHabits]);
+    const savedUnfinishedHabits =
+      JSON.parse(localStorage.getItem("unfinishedHabits")) || [];
+    setUnfinishedHabits(savedUnfinishedHabits);
+  }, [setHabits]);
 
   useEffect(() => {
     if (unfinishedHabits.length > 0) {
@@ -131,40 +132,20 @@ const HabitList = ({
     localStorage.setItem("completedHabits", JSON.stringify(completedHabits));
   };
 
-  const filteredHabits = habits.filter((habit) => {
-    if (showUnfinished) {
-      return habit.goalDays > 0;
-    } else {
-      return habit.goalDays === 0;
-    }
-  });
+  const filteredHabits = habits.filter((habit) => habit.goalDays > 0);
 
-  const handleDeleteHabit = (habit) => {
-    if (habit.goalDays === 0) {
-      const updatedHabits = habits.filter((h) => h.key !== habit.key);
-
-      setHabits(updatedHabits);
-      localStorage.setItem("habits", JSON.stringify(updatedHabits));
-
-      setCompletedHabits((prevCompletedHabits) => [
-        ...prevCompletedHabits,
-        { ...habit, goalDays: habit.initialGoalDays },
-      ]);
-
-      saveCompletedHabitsToStorage(completedHabits);
-
-      toast.error(`Finished habit "${habit.name}" has been deleted.`);
-    } else {
-      toast.error(`Unfinished habit "${habit.name}" cannot be deleted.`);
-    }
+  const handleCloseClick = () => {
+    setShowUnfinished(false);
+    setShowHabitForm(true);
   };
 
+  if (!showUnfinished) {
+    return null; // Return null when showUnfinished is false
+  }
+
   return (
-    <div>
-      <button onClick={handleShowUnfinishedClick}>
-        Show Unfinished Habits
-      </button>
-      <ul className='habitlist-buttons'>
+    <div className='habit-form'>
+      <ul className='habitlist-buttons habit-list-form'>
         {filteredHabits
           .filter((habit) => {
             if (showUnfinished) {
@@ -226,39 +207,24 @@ const HabitList = ({
                       ) : (
                         <></>
                       )}
-                      {habit.goalDays === 0 ? (
-                        <div>
-                          <p>
-                            Goal achieved in: {habit.initialGoalDays}{" "}
-                            {habit.initialGoalDays === 1 ? "day" : "days"}
-                          </p>
-                          <div>
-                            <div className='checkdelete-container'>
-                              <button
-                                onClick={() => handleDeleteHabit(habit)}
-                                disabled={habit.goalDays > 0}
-                              >
-                                DELETE
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className='checkdelete-container'>
-                          <button
-                            onClick={() => handleCheckClick(habit)}
-                            disabled={habit.goalDays <= 0}
-                          >
-                            CHECK
-                          </button>
-                        </div>
-                      )}
+
+                      <div className='checkdelete-container'>
+                        <button
+                          onClick={() => handleCheckClick(habit)}
+                          disabled={habit.goalDays <= 0}
+                        >
+                          CHECK
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
               ) : null}
             </li>
           ))}
+        <button className='special-button' onClick={handleCloseClick}>
+          Close
+        </button>
       </ul>
     </div>
   );
