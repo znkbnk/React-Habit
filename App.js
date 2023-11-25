@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useRef, ReactDOM } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import ReactDOM from "react-dom";
 import HabitForm from "./HabitForm";
 import HabitList from "./HabitList";
 import emailjs from "emailjs-com";
