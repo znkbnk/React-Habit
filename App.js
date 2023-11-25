@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, ReactDOM } from "react";
 import HabitForm from "./HabitForm";
 import HabitList from "./HabitList";
 import emailjs from "emailjs-com";
@@ -477,3 +477,5 @@ function App() {
 }
 
 export default App;
+
+ReactDOM.render(<App />, document.getElementById("root"));
