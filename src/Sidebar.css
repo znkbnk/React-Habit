@@ -63,7 +63,6 @@ li:first-child .skewed-button {
   transform: skew(-30deg);
 }
 .skewed-button:hover,
-
 .skewed-button.active {
   outline: 0;
   color: #000000;
@@ -131,4 +130,6 @@ li {
   opacity: 0.6;
   cursor: not-allowed;
 }
+
+
 

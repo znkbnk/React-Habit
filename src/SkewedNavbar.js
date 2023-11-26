@@ -9,7 +9,6 @@ export default function SkewedNavbar(props) {
     setIsContactFormVisible,
     setShowHabitForm,
     setIsRegistrationVisible,
-    setCompletedHabitsData,
     setShowCompletedHabits,
     setShowUnfinished,
   } = props;
@@ -17,6 +16,7 @@ export default function SkewedNavbar(props) {
   const [showCategoriesDropdown, setShowCategoriesDropdown] = useState(false);
   const [theme, setTheme] = useState("light");
   const [isBlackBackground, setIsBlackBackground] = useState(false);
+   const [logoSource, setLogoSource] = useState("logo.png");
 
   const handleBackgroundClick = () => {
     setIsBlackBackground((prev) => !prev);
@@ -53,7 +53,9 @@ export default function SkewedNavbar(props) {
   };
 
   const handleThemeClick = () => {
-    setTheme(!theme);
+    const newTheme = theme === "dark" ? "light" : "dark";
+    setTheme(newTheme);
+    setLogoSource(newTheme === "dark" ? "logo1.png" : "logo.png"); // Update the logo source
     props.onThemeClick();
   };
   const handleContactUsClick = () => {
@@ -65,9 +67,17 @@ export default function SkewedNavbar(props) {
     setShowUnfinished(false);
   };
 
+
   return (
     <div>
-      <ul className='navbar habit-form'>
+      <ul className={`navbar habit-form ${theme}`}>
+        <img
+          src={process.env.PUBLIC_URL + `/${logoSource}`}
+          alt='Logo'
+          className='logo'
+          key={theme}
+        />
+
         <li>
           <button
             className='nav-dark skewed-button habit-form'

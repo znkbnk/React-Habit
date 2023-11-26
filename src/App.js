@@ -409,7 +409,6 @@ function App() {
           showHabitForm={showHabitForm}
         />
       )}
-      <h1 className='habit-form'>Habit Tracker App</h1>
 
       {showChart && (
         <div className='chart-container habit-form'>
